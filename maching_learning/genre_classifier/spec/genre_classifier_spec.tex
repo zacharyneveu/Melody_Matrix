@@ -1,0 +1,61 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%	Latex Notes Template
+%	Zach Neveu
+%	zachary.neveu@gmail.com
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Geometry, font
+\documentclass[12pt, letter]{article}
+\usepackage[margin=0.8in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{fourier}
+\usepackage{titling}
+\setlength{\droptitle}{-5em} 
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\graphicspath{{imgs/}}
+\usepackage{hyperref}
+
+% Math stuff
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{bm}
+
+%acronyms
+\usepackage{acronym}
+
+
+% Code Highlighting
+\usepackage{minted}
+\usemintedstyle{solarizedlight}
+
+\author{Zach Neveu}
+\title{ Music Genre Classifier Specification }
+
+\begin{document}
+\maketitle
+
+\subsection*{Inputs}
+\begin{itemize}
+	\item The only input will be a multi-channel audio input. This will be merged down to a stereo representation, as this is what the dataset includes.
+\end{itemize}
+
+\subsection*{Outputs}
+\begin{itemize}
+	\item The Genre Classifier will output a one-hot vector which will select one of 16 possible music genres.
+	\item Possible genres (limited by the training dataset) are: Rock, Electronic, Experimental, Hip-Hop, Folk, Instrumental, Pop, International, Classical, Old-Time/Historic, Jazz, Country, Soul-RnB, Spoken, Blues, and Easy Listening
+	\item Fewer genres can be used if this is convenient, however more genres cannot be added
+\end{itemize}
+
+\subsection*{Architecture}
+\begin{itemize}
+	\item The genre classifier will use a simple convolutional architecture based on Sander Dielman's paper "End to End Learning for Music Audio"
+	\item Future iterations could use a fork off of the audio2midi model to increase efficiency
+\end{itemize}
+
+\subsection*{Dataset and Training}
+\begin{itemize}
+	\item Dataset Used: Free Music Archive (medium partition):\ \  \href{FMA}{https://github.com/mdeff/fma}
+\end{itemize}
+
+\end{document}
