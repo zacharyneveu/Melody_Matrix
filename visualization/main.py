@@ -44,7 +44,7 @@ frame_test = Frame(Note(64, 74), Genre("Blues"))
 # ERROR HERE
 # frame_test_2 = Frame([], Genre(1))
 
-# these two list to get the x-value
+# these two list are to get the x-value
 note_list1 = ["C", "C#", "D", "D#", "E", "F"]
 note_list2 = ["B", "A#", "A", "G#", "G", "F#"]
 
@@ -57,7 +57,7 @@ y_range1 = [0, 1, 2]
 y_range2 = [5, 4, 3]
 note_y = []
 
-# mareix_array will be ued to store the hex code
+# matrix_array will be ued to store the hex code
 # data type is tr
 matrix_array = np.zeros((6, 6, 6))
 matrix_array = matrix_array.astype('str')
@@ -165,7 +165,6 @@ This will be the function receiving the input and executing
 
 
 def test_function(frame_note):
-    # print("Hello World!")
     pitch_value = frame_note.notes.pitch
     genre_value = frame_note.genre.genre
     print('This is the pitch number we got from frame_test: ',
