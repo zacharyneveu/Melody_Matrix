@@ -1,4 +1,5 @@
 import numpy as np
+import webcolors
 from color_code_2 import color_code
 from midi_note import midi_note
 # Note holds velocity and pitch values along with ways to access them in
@@ -7,9 +8,10 @@ from midi_note import midi_note
 
 class Note:
 
-    def __init__(self, velocity, pitch):
+    def __init__(self, velocity, pitch, channel):
         self.pitch = pitch
         self.velocity = velocity
+        self.channel = channel
         assert 0 <= pitch <= 127,       "Pitch must be between 0 and 127"
         # what does velocity do here?
         assert 0 <= velocity <= 127, "Velocity must be between 0 and 127"
@@ -38,7 +40,7 @@ class Frame:
         assert type(genre) is Genre, "genre should be of type Genre"
 
 # Frames can have multiple notes
-frame_test = Frame(Note(64, 74), Genre("Blues"))
+frame_test = Frame(Note(64, 74, 120), Genre("Blues"))
 
 # Frames can have no notes at all ???
 # ERROR HERE
@@ -58,7 +60,7 @@ y_range2 = [5, 4, 3]
 note_y = []
 
 # matrix_array will be ued to store the hex code
-# data type is tr
+# data type is str
 matrix_array = np.zeros((6, 6, 6))
 matrix_array = matrix_array.astype('str')
 
@@ -107,10 +109,11 @@ def y_value(node_value, note_x):
 # after confirm the x, y, z value,
 # there should also be a function to color the relevant codes
 
-
-def colorStack(node_x, node_y, z):
-    # write something
-    print("1")
+# locates the spatial location of the LED that should be enlightened
+# and also color the LEDs that's below it in z-axis
+def colorStack(x_value, y_value, z_value, color_code):
+    for i in range(z_value + 1):
+    	matrix_array[i][y_value][x_value] = color_code
 
 
 def clearStack(node_x, node_y):
@@ -159,6 +162,110 @@ def traverseMatrix(matrix_array):
 	return color_list
 
 
+brightLevel = 0;
+
+# this function is to confirm the brighness level based on pitch value
+def pitch_to_brightLevel(note_velocity):
+	if note_velocity < 26:
+		return -1
+	elif note_velocity <52 and note_velocity >=26:
+		return 0
+	elif note_velocity <78 and note_velocity >=52:
+		return 1
+	elif note_velocity <104 and note_velocity >=78:
+		return 2
+	else: return 3
+
+# this function takes in one hex color code (without the hash symbol)
+# and produce the relevant color code in certain brightness level
+def hexcode_Brightness(hex_color, param):
+	tem_tuple = webcolors.hex_to_rgb('#'+ hex_color)
+	tem_list = list(tem_tuple)
+	for i in range(len(tem_list)):
+	    tem_list[i] += param * 25
+	    if(tem_list[i] > 255): tem_list[i] = 255
+	    if(tem_list[i] < 0): tem_list[i] = 0 
+
+	tem_tuple = tuple(tem_list)
+	tem_hex_color = webcolors.rgb_to_hex(tem_tuple)
+
+	# using substring method to get rid of the hash symbol
+	return tem_hex_color[1:7]
+
+channel_visualCase = 0
+def channel_to_stack(channel_num):
+	if channel_num >= 0 and channel_num <= 13:
+		return 0
+	elif channel_num >= 14 and channel_num <= 38:
+		return 1
+	elif channel_num >= 39 and channel_num <= 63:
+		return 2
+	elif channel_num >= 64 and channel_num <= 88:
+		return 3
+	elif channel_num >= 89 and channel_num <= 113:
+		return 4
+	else: 
+		return 5
+
+
+default_color = 'FFFFFF'
+
+def channel_to_color(case_num):
+	if(case_num == 0):
+		for i in range(6):
+			colorStack(5, 0, i, default_color)
+			colorStack(4, 1, i, default_color)
+			colorStack(3, 2, i, default_color)
+			colorStack(2, 3, i, default_color)
+			colorStack(1, 4, i, default_color)
+			colorStack(0, 5, i, default_color)
+
+	if(case_num == 1):
+		for i in range(6):
+			colorStack(4, 0, i, default_color)
+			colorStack(5, 1, i, default_color)
+			colorStack(4, 2, i, default_color)
+			colorStack(3, 3, i, default_color)
+			colorStack(2, 4, i, default_color)
+			colorStack(1, 5, i, default_color)
+
+	if(case_num == 2):
+		for i in range(6):
+			colorStack(3, 0, i, default_color)
+			colorStack(4, 1, i, default_color)
+			colorStack(5, 2, i, default_color)
+			colorStack(4, 3, i, default_color)
+			colorStack(3, 4, i, default_color)
+			colorStack(2, 5, i, default_color)
+
+	if(case_num == 3):
+		for i in range(6):
+			colorStack(2, 0, i, default_color)
+			colorStack(3, 1, i, default_color)
+			colorStack(4, 2, i, default_color)
+			colorStack(5, 3, i, default_color)
+			colorStack(4, 4, i, default_color)
+			colorStack(3, 5, i, default_color)
+
+	if(case_num == 4):
+		for i in range(6):
+			colorStack(1, 0, i, default_color)
+			colorStack(2, 1, i, default_color)
+			colorStack(3, 2, i, default_color)
+			colorStack(4, 3, i, default_color)
+			colorStack(5, 4, i, default_color)
+			colorStack(4, 5, i, default_color)
+
+	if(case_num == 5):
+		for i in range(6):
+			colorStack(0, 0, i, default_color)
+			colorStack(1, 1, i, default_color)
+			colorStack(2, 2, i, default_color)
+			colorStack(3, 3, i, default_color)
+			colorStack(4, 4, i, default_color)
+			colorStack(5, 5, i, default_color)
+		
+
 """
 This will be the function receiving the input and executing
 """
@@ -167,8 +274,12 @@ This will be the function receiving the input and executing
 def test_function(frame_note):
     pitch_value = frame_note.notes.pitch
     genre_value = frame_note.genre.genre
+    channel_value = frame_note.notes.channel
+    velocity_value = frame_note.notes.velocity
     print('This is the pitch number we got from frame_test: ',
           pitch_value)
+    print('This is the velocity value: ', velocity_value)
+    print('This is the channel value: ', channel_value)
     print('and this is the genre we got: ', genre_value)
     # Frames can have multiple notes
     # frame_test = Frame(Note(64, 74), Genre("Blues"))
@@ -180,6 +291,13 @@ def test_function(frame_note):
 
     note_num = midi_to_note(str(pitch_value))
     print('The relevant music note is: ', note_num)
+
+    brightLevel = pitch_to_brightLevel(velocity_value)
+    print('This is the brightness Level:', brightLevel)
+
+    channel_visualCase = channel_to_stack(channel_value)
+    print('Based on the channel value, this case will be used for visualization is: ', channel_visualCase)
+
     # note_color_list = ["C", "C#", "D", "D#", "E", "F", "B", "A#", "A", "G#",
     # "G", "F#"]
     # print(note_color_list.index(note_num))
@@ -188,6 +306,9 @@ def test_function(frame_note):
     color_num = genre_to_color(
         genre_value, note_color_list.index(note_num))
     print('we know the color hex code is: ', color_num)
+
+    color_num = hexcode_Brightness(color_num, brightLevel)
+    print('this is the adjusted color hex code according to brightness: ', color_num)
 
     print('')
     print('The value of node and octave can help decide on the spatial value')
@@ -201,18 +322,16 @@ def test_function(frame_note):
     print('This will be the value of z: ', note_z)
 
     # stores the color code to the 3d matrix
-    matrix_array[note_z][note_y][note_x] = color_num
-
+    # matrix_array[note_z][note_y][note_x] = color_num
+    colorStack(note_x, note_y, note_z, color_num)
+    channel_to_color(channel_visualCase)
 
 # if __name__ == "__main__":
 #     main()
 
 # frame_test = Frame(Note(64, 74), Genre("Blues"))
 test_function(frame_test)
-print(matrix_array)
+# print(matrix_array)
 output_list = traverseMatrix(matrix_array)
-print(output_list)
-# X = 2, Y =0, Z = 4, 
-# X%2 !== 1 => 
-# 6 * X + Y + 36 * Z = 12 + 0 + 144 = 156
-print(output_list.index('484F5E'))
+# print(output_list)
+
