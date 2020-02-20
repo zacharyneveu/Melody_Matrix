@@ -165,7 +165,7 @@ def traverseMatrix(matrix_array):
 brightLevel = 0;
 
 # this function is to confirm the brighness level based on pitch value
-def pitch_to_brightLevel(note_velocity):
+def velocity_to_brightLevel(note_velocity):
 	if note_velocity < 26:
 		return -1
 	elif note_velocity <52 and note_velocity >=26:
@@ -190,6 +190,21 @@ def hexcode_Brightness(hex_color, param):
 	tem_hex_color = webcolors.rgb_to_hex(tem_tuple)
 
 	return tem_hex_color
+
+def hexcode_brightness_dynamic(hex_color, velocity_value):
+	tem_tuple = webcolors.hex_to_rgb('#'+ hex_color)
+	tem_list = list(tem_tuple)
+	param = velocity_value - 26
+	for i in range(len(tem_list)):
+	    tem_list[i] += param
+	    if(tem_list[i] > 255): tem_list[i] = 255
+	    if(tem_list[i] < 0): tem_list[i] = 0 
+
+	tem_tuple = tuple(tem_list)
+	tem_hex_color = webcolors.rgb_to_hex(tem_tuple)
+
+	return tem_hex_color
+
 
 channel_visualCase = 0
 def channel_to_stack(channel_num):
@@ -291,7 +306,7 @@ def test_function(frame_note):
     note_num = midi_to_note(str(pitch_value))
     print('The relevant music note is: ', note_num)
 
-    brightLevel = pitch_to_brightLevel(velocity_value)
+    brightLevel = velocity_to_brightLevel(velocity_value)
     print('This is the brightness Level:', brightLevel)
 
     channel_visualCase = channel_to_stack(channel_value)
@@ -306,8 +321,14 @@ def test_function(frame_note):
         genre_value, note_color_list.index(note_num))
     print('we know the color hex code is: ', color_num)
 
-    color_num = hexcode_Brightness(color_num, brightLevel)
-    print('this is the adjusted color hex code according to brightness: ', color_num)
+
+    # base on this method. all RGB value are added with 25
+    color_num1 = hexcode_Brightness(color_num, brightLevel)
+    print('This is the color hex code with brightness adjustment: ', color_num1)
+
+    # based on this method, all RGB value are added with 64-26 = 38
+    color_num2 = hexcode_brightness_dynamic(color_num, velocity_value)
+    print('This is the color hex code with dynamic brightness adjsutment: ', color_num2)
 
     print('')
     print('The value of node and octave can help decide on the spatial value')
@@ -322,7 +343,7 @@ def test_function(frame_note):
 
     # stores the color code to the 3d matrix
     # matrix_array[note_z][note_y][note_x] = color_num
-    colorStack(note_x, note_y, note_z, color_num)
+    colorStack(note_x, note_y, note_z, color_num1)
     channel_to_color(channel_visualCase)
 
 
