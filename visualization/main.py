@@ -189,8 +189,7 @@ def hexcode_Brightness(hex_color, param):
 	tem_tuple = tuple(tem_list)
 	tem_hex_color = webcolors.rgb_to_hex(tem_tuple)
 
-	# using substring method to get rid of the hash symbol
-	return tem_hex_color[1:7]
+	return tem_hex_color
 
 channel_visualCase = 0
 def channel_to_stack(channel_num):
@@ -326,10 +325,31 @@ def test_function(frame_note):
     colorStack(note_x, note_y, note_z, color_num)
     channel_to_color(channel_visualCase)
 
+
+
+def test_array_generator(genre_name):
+	for i in range(6):
+		color_code = genre_to_color(genre_name, i)
+		for j in range(3):
+			colorStack(i, j, 5, color_code)
+
+	for m in range(6):
+		color_code = genre_to_color(genre_name, m+6)
+		for n in range(3):
+			colorStack(m, 5-n, 5, color_code)
+
+	# print('This is the test matrix array \n', matrix_array)
+	tem_array = traverseMatrix(matrix_array)
+	return tem_array
+
+
 # if __name__ == "__main__":
 #     main()
 
 # frame_test = Frame(Note(64, 74), Genre("Blues"))
+
+test_array = test_array_generator('default')
+print('This is the test_array: \n', test_array)
 test_function(frame_test)
 # print(matrix_array)
 output_list = traverseMatrix(matrix_array)
