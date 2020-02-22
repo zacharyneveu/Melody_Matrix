@@ -2,23 +2,27 @@ import numpy as np
 import webcolors
 from color_code_2 import color_code
 from midi_note import midi_note
-# Note holds velocity and pitch values along with ways to access them in
-# velocity, octave, note letter format
 
 
 class Note:
-
+    """ Note class holds all information for one MIDI note
+        Attributes:
+            pitch    (0:127): pitch of note on keyboard
+            velocity (0:127): amplitude/loudness of note
+            channel  (0:127): how far left/right in the mix a note is
+    """
     def __init__(self, velocity, pitch, channel):
         self.pitch = pitch
         self.velocity = velocity
         self.channel = channel
-        assert 0 <= pitch <= 127,       "Pitch must be between 0 and 127"
-        # what does velocity do here?
+        assert 0 <= pitch <= 127,    "Pitch must be between 0 and 127"
         assert 0 <= velocity <= 127, "Velocity must be between 0 and 127"
+        assert 0 <= channel <= 127,  "Velocity must be between 0 and 127"
 
 
 class Genre:
-
+    """ Holds a genre as an integer
+    """
     def __init__(self, g):
         self.possible_genres = {0: 'Pop', 1: 'Blues', 2: 'Folk', 3: 'Rock',
                                 4: 'Hip-Hop', 5: 'EDM', 6: 'R&B', 7: 'Classical', 8: 'Default'}
@@ -28,23 +32,26 @@ class Genre:
             self.genre = g
         assert self.genre in self.possible_genres.values(), "Genre does not exist"
 
-# Frame holds a list of notes and a genre
+    def get_genre_name(int genre_num):
+        """ returns genre name given the genre number """
+        assert genre_num in possible_genres.keys(), "unknown genre"
+        return self.possible_genres(genre_num)
+
 
 
 class Frame:
+    """ Holds a list of notes and a genre. Instances of this class are 
+        what is output by the machine learning code 
+        Params:
+            notes (list) : list of Note objects
+            genre (Genre): single genre
+    """
 
     def __init__(self, notes, genre):
         self.notes = notes
         assert type(notes) is Note, "notes should be an array of type `Note`"
         self.genre = genre
         assert type(genre) is Genre, "genre should be of type Genre"
-
-# Frames can have multiple notes
-frame_test = Frame(Note(64, 74, 120), Genre("Blues"))
-
-# Frames can have no notes at all ???
-# ERROR HERE
-# frame_test_2 = Frame([], Genre(1))
 
 # these two list are to get the x-value
 note_list1 = ["C", "C#", "D", "D#", "E", "F"]
@@ -65,12 +72,10 @@ matrix_array = np.zeros((6, 6, 6))
 matrix_array = matrix_array.astype('str')
 
 
-"""
-This is to get the value of x
-"""
-
-
 def x_value(node_value):
+    """
+    Gets the x value on the cube for a given note
+    """
     if node_value in note_list1:
         return (note_list1.index(node_value))
     else:
@@ -280,12 +285,12 @@ def channel_to_color(case_num):
 			colorStack(5, 5, i, default_color)
 		
 
-"""
-This will be the function receiving the input and executing
-"""
 
 
 def test_function(frame_note):
+    """
+    This will be the function receiving the input and executing
+    """
     pitch_value = frame_note.notes.pitch
     genre_value = frame_note.genre.genre
     channel_value = frame_note.notes.channel
@@ -364,15 +369,14 @@ def test_array_generator(genre_name):
 	return tem_array
 
 
-# if __name__ == "__main__":
-#     main()
-
-# frame_test = Frame(Note(64, 74), Genre("Blues"))
-
-test_array = test_array_generator('default')
-print('This is the test_array: \n', test_array)
-test_function(frame_test)
-# print(matrix_array)
-output_list = traverseMatrix(matrix_array)
-# print(output_list)
+"""
+Note: nothing should be left in the python file that's not in a function or in this main block
+"""
+if __name__ == "__main__":
+    test_array = test_array_generator('default')
+    print('This is the test_array: \n', test_array)
+    test_function(frame_test)
+    # print(matrix_array)
+    output_list = traverseMatrix(matrix_array)
+    # print(output_list)
 
