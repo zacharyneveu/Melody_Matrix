@@ -1,7 +1,6 @@
 import numpy as np
 import webcolors
-from color_code_2 import color_code
-from midi_note import midi_note
+from color_code import color_code
 # Note holds velocity and pitch values along with ways to access them in
 # velocity, octave, note letter format
 
@@ -63,7 +62,7 @@ note_y = []
 matrix_array = np.zeros((6, 6, 6))
 matrix_array = matrix_array.astype('str')
 
-default_color = 'FFFFFF'
+default_color = '255,255,255.'
 channel_visualCase = 0
 brightLevel = 0
 
@@ -156,10 +155,30 @@ def genre_to_color(genre_name, node_num):
 													e.g. node_index of 'C' would be 0
 
 	Returns:
-			color_code[string]: the relevant hex color code
+			color_code(string): the relevant hex color code
 
 	"""
-	return color_code[genre_name.lower()][note_color_list.index(node_num)]
+	hex_code = color_code[genre_name.lower()][note_color_list.index(node_num)]
+	rgb_code = webcolors.hex_to_rgb(hex_code)
+	color_string = rgb_to_str(rgb_code)
+	return color_string
+
+def str_to_rgb(color_string):
+	""" this function converts the color string to 3 rgb values in a list
+		Args:
+			color_string(str): the string thats stored in the matrix_array, format: "r_value, g_value, b_value."
+		Returns:
+			tem(str): a list of 3 
+	"""
+	tem = color_string.split(",", 2)
+	tem[2] = tem[2][:len(tem[2])- 1]
+	for i in range(3):
+		tem[i] = int(tem[i])
+	return tem
+
+def rgb_to_str(rgb_list):
+	return str(rgb_list[0]) + ',' + str(rgb_list[1]) + ',' + str(rgb_list[2]) + '.'
+
 
 
 def midi_to_octave(midi_num):
@@ -255,13 +274,17 @@ def traverseMatrix(matrix_array):
 			Returns:
 					color_list(string): an array that contains the hex color code
 	"""
+	tem_string = ''
 	color_list = [None] * 216
 	for z in range(6):
 		for y in range(6):
 			for x in range(6):
-				color_list[coords2Index(x, y, z)] = matrix_array[z][y][x]
+				if(matrix_array[z][y][x] == '0.0'):
+					color_list[coords2Index(x, y, z)] = '0,0,0.'
+				else:
+					color_list[coords2Index(x, y, z)] = matrix_array[z][y][x]
 
-	return color_list
+	return '<' + tem_string.join(color_list) + '>'
 
 
 
@@ -288,8 +311,8 @@ def velocity_to_brightLevel(note_velocity):
 		return 3
 
 
-def hexcode_Brightness(hex_color, level_num):
-	"""this function takes in one hex color code (without the hash symbol)
+def hexcode_Brightness(color_string, level_num):
+	"""this function takes in one color string
 			and produce the relevant color code in certain brightness level
 
 			Args:
@@ -300,8 +323,7 @@ def hexcode_Brightness(hex_color, level_num):
 			Returns:
 					tem_hex_color(string): the hex color code of node that has been adjusted
 	"""
-	tem_tuple = webcolors.hex_to_rgb('#' + hex_color)
-	tem_list = list(tem_tuple)
+	tem_list = str_to_rgb(color_string)
 	for i in range(len(tem_list)):
 		tem_list[i] += level_num * 25
 		if(tem_list[i] > 255):
@@ -309,14 +331,13 @@ def hexcode_Brightness(hex_color, level_num):
 		if(tem_list[i] < 0):
 			tem_list[i] = 0
 
-	tem_tuple = tuple(tem_list)
-	tem_hex_color = webcolors.rgb_to_hex(tem_tuple)
+	tem_string = rgb_to_str(tem_list)
 
-	return tem_hex_color
+	return tem_string
 
 
-def hexcode_brightness_dynamic(hex_color, velocity_value):
-	"""this function takes in one hex color code (without the hash symbol)
+def hexcode_brightness_dynamic(color_string, velocity_value):
+	"""this function takes in one color string
 			and produce the relevant color code in certain brightness level
 
 			Args:
@@ -328,8 +349,7 @@ def hexcode_brightness_dynamic(hex_color, velocity_value):
 			Returns:
 					tem_hex_color(string): the hex color code of node that has been adjusted
 	"""
-	tem_tuple = webcolors.hex_to_rgb('#' + hex_color)
-	tem_list = list(tem_tuple)
+	tem_list = str_to_rgb(color_string)
 	param = velocity_value - 26
 	for i in range(len(tem_list)):
 		tem_list[i] += param
@@ -338,10 +358,9 @@ def hexcode_brightness_dynamic(hex_color, velocity_value):
 		if(tem_list[i] < 0):
 			tem_list[i] = 0
 
-	tem_tuple = tuple(tem_list)
-	tem_hex_color = webcolors.rgb_to_hex(tem_tuple)
+	tem_string = rgb_to_str(tem_list)
 
-	return tem_hex_color
+	return tem_string
 
 
 def channelCase(channel_num):
@@ -464,16 +483,16 @@ def test_function(frame_note):
 
 	print('')
 	print('Based on the genre provided, ')
-	color_num = genre_to_color(
+	color_string = genre_to_color(
 		genre_value, note_num)
-	print('we know the color hex code is: ', color_num)
+	print('we know the color string is: ', color_string)
 
 	# base on this method. all RGB value are added with 25
-	color_num1 = hexcode_Brightness(color_num, brightLevel)
+	color_num1 = hexcode_Brightness(color_string, brightLevel)
 	print('This is the color hex code with brightness adjustment: ', color_num1)
 
 	# based on this method, all RGB value are added with 64-26 = 38
-	color_num2 = hexcode_brightness_dynamic(color_num, velocity_value)
+	color_num2 = hexcode_brightness_dynamic(color_string, velocity_value)
 	print('This is the color hex code with dynamic brightness adjsutment: ', color_num2)
 
 	print('')
@@ -521,7 +540,8 @@ def test_array_generator(genre_name):
 #     main()
 
 
-test_array = test_array_generator('default')
-print('This is the test_array: \n', test_array)
+# test_array = test_array_generator('default')
+# print('This is the test_array: \n', test_array)
 test_function(frame_test)
 output_list = traverseMatrix(matrix_array)
+print(output_list)
