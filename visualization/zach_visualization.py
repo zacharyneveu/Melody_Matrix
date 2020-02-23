@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[151]:
+# In[8]:
 
 
 from color_code_2 import color_code
 from PIL import Image
 from matplotlib.pyplot import imshow
 import webcolors as wc
+import colorsys
 
 
-# In[101]:
+# In[12]:
 
 
 class Note:
@@ -40,6 +41,7 @@ class Genre:
         else:
             self.genre = g
         assert self.genre in self.possible_genres.values(), "Genre does not exist"
+        self.colors = color_code[self.genre]
 
     def get_genre_name(self, genre_num):
         """ returns genre name given the genre number """
@@ -61,7 +63,7 @@ class Frame:
         assert type(genre) is Genre, "genre should be of type Genre"
 
 
-# In[266]:
+# In[103]:
 
 
 class Cube:
@@ -106,9 +108,14 @@ class Cube:
         """
         note_in_octave = note.pitch%12
         try:
-            return "#"+color_code[genre.genre][note_in_octave]
+            hex_code = "#"+genre.colors[note_in_octave]
+            hls = list(colorsys.rgb_to_hls(*wc.hex_to_rgb(hex_code)))
+            # update lightness based on velocity but from 0-255
+            hls[1] = note.velocity * 2
+            rgb = colorsys.hls_to_rgb(*[int(round(x)) for x in hls])
+            #wc.rgb_to_hex([int(x) for x in rgb])
+            return hex_code
         except Exception as E:
-            print(E)
             return "#000000"
         
     def display_screen(self, layer, swatch_size=10):
@@ -116,7 +123,7 @@ class Cube:
         for x in range(self.size):
              for y in range(self.size):
                     img.paste(self.matrix[x][y][layer], (x*swatch_size, y*swatch_size, (x+1)*swatch_size, (y+1)*swatch_size))
-        return img
+        return img.transpose(Image.FLIP_TOP_BOTTOM)
     
     def process_frame(self, frame):
         """ Updates cube with new frame information
@@ -134,16 +141,18 @@ class Cube:
             except:
                 continue
             color = self.get_color(frame.genre, note)
-            print(f"{x}, {y}, {z}, {color}")
+            #print(f"{x}, {y}, {z}, {color}")
             self.matrix[x][y][z] = color
         
 
 
-# In[287]:
+# In[107]:
 
+
+from random import randint
 
 #notes = [Note(40, 83, 10), Note(87, 19, 121), Note(20, 51, 64)]
-notes = [Note(64,i,64) for i in range(12, 36, 2)]
+notes = [Note(randint(10,127),i,randint(0,127)) for i in range(12, 127)]
 f = Frame(notes, Genre('default'))
 
 c = Cube(6)
@@ -151,4 +160,10 @@ c = Cube(6)
 c.process_frame(f)
 
 [display(c.display_screen(i)) for i in range(c.size)]
+
+
+# In[ ]:
+
+
+
 
