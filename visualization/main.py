@@ -1,5 +1,6 @@
 import numpy as np
 import webcolors
+
 from color_code import color_code
 # Note holds velocity and pitch values along with ways to access them in
 # velocity, octave, note letter format
@@ -27,10 +28,20 @@ class Genre:
 			self.genre = g
 		assert self.genre in self.possible_genres.values(), "Genre does not exist"
 
-# Frame holds a list of notes and a genre
+    def get_genre_name(int genre_num):
+        """ returns genre name given the genre number """
+        assert genre_num in possible_genres.keys(), "unknown genre"
+        return self.possible_genres(genre_num)
+
 
 
 class Frame:
+    """ Holds a list of notes and a genre. Instances of this class are
+        what is output by the machine learning code
+        Params:
+            notes (list) : list of Note objects
+            genre (Genre): single genre
+    """
 
 	def __init__(self, notes, genre):
 		self.notes = notes
@@ -46,6 +57,7 @@ frame_test = Frame(Note(64, 74, 120), Genre("Blues"))
 # frame_test_2 = Frame([], Genre(1))
 
 # These two lists are for the x-value look-up
+
 note_list1 = ["C", "C#", "D", "D#", "E", "F"]
 note_list2 = ["B", "A#", "A", "G#", "G", "F#"]
 
@@ -67,6 +79,7 @@ channel_visualCase = 0
 brightLevel = 0
 
 def x_value(node_value):
+
 	"""this function returns the x-value of the relevant note
 
 	Note:
@@ -82,8 +95,6 @@ def x_value(node_value):
 		return (note_list1.index(node_value))
 	else:
 		return (note_list2.index(node_value))
-
-
 
 
 def y_value(node_value):
@@ -146,12 +157,12 @@ def fadeStack(x, y, z):
 
 
 def genre_to_color(genre_name, node_num):
-	"""this function looks up and return the color code 
+	"""this function looks up and return the color code
 			based on the genre name and the index of node_value
 
 	Args:
 			genre_name(string): the genre name
-			node_index(int): the relevant node_index based on node_value, 
+			node_index(int): the relevant node_index based on node_value,
 													e.g. node_index of 'C' would be 0
 
 	Returns:
@@ -168,7 +179,7 @@ def str_to_rgb(color_string):
 		Args:
 			color_string(str): the string thats stored in the matrix_array, format: "r_value, g_value, b_value."
 		Returns:
-			tem(str): a list of 3 
+			tem(str): a list of 3
 	"""
 	tem = color_string.split(",", 2)
 	tem[2] = tem[2][:len(tem[2])- 1]
@@ -295,7 +306,7 @@ def velocity_to_brightLevel(note_velocity):
 					note_velocity(int): the velocity value of node
 
 			Returns:
-					brightLevel(int): the brightLevel that decides on 
+					brightLevel(int): the brightLevel that decides on
 					 how much a color code will be brightened or darkened
 
 	"""
@@ -317,7 +328,7 @@ def hexcode_Brightness(color_string, level_num):
 
 			Args:
 					hex_color(string): the hex color code of node
-					level_num(int): the brightLevel that decides on 
+					level_num(int): the brightLevel that decides on
 									 how much a color code will be brightened or darkened
 
 			Returns:
@@ -391,7 +402,7 @@ def channelCase(channel_num):
 def channel_to_stack(case_num):
 	"""this function takes in case number and visualize the channel
 
-	Args: 
+	Args:
 		case_num(int): the case number representing the channel visualization case
 
 	"""
@@ -448,7 +459,6 @@ def channel_to_stack(case_num):
 			colorStack(3, 3, i, default_color)
 			colorStack(4, 4, i, default_color)
 			colorStack(5, 5, i, default_color)
-
 
 def test_function(frame_note):
 	""" this function receives the frame, and stores the hex color code in matrix_array
@@ -515,7 +525,7 @@ def test_function(frame_note):
 def test_array_generator(genre_name):
 	""" this function generates a complete array for visualization testing
 
-	Args: 
+	Args:
 		genre_name(string): the name of the music genre
 
 	Returns:
@@ -534,7 +544,6 @@ def test_array_generator(genre_name):
 	# print('This is the test matrix array \n', matrix_array)
 	tem_array = traverseMatrix(matrix_array)
 	return tem_array
-
 
 # if __name__ == "__main__":
 #     main()
