@@ -108,10 +108,3 @@ void setColorGammaCorrect(int numOfPixels, uint32_t color) {
       pgm_read_byte(&gamma8[green(color)]),
       pgm_read_byte(&gamma8[blue(color)]));  
 }
-
-void showColors(int arr[][3]) {
-  for(int i = 0; i < strip.numPixels(); i++) {
-    setColorGammaCorrect(i, strip.Color(arr[i][0], arr[i][1], arr[i][2]));
-    strip.show(); 
-  }
-}
