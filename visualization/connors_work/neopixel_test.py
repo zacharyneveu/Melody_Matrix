@@ -26,13 +26,13 @@ def findArduino():
     else:
         return 0
 
-def sendArray(colorArray, ser):
+def sendArray(colorArray, ser, fr):
     for value in colorArray.flatten():
         byte = chr(int(value/2)).encode('utf-8')
         ser.write(byte)
-    time.sleep(1/30)
+    time.sleep(1/fr)
 
-def testAnimation(num_leds, ser):
+def testAnimation(num_leds, ser, fr):
     color_1 = [255,0,0]
     color_2 = [0,255,0]
     color_3 = [0,0,255]
@@ -42,12 +42,12 @@ def testAnimation(num_leds, ser):
         array_1[i] = color_1
         array_1[(i+int(num_leds/3))%num_leds] = color_2
         array_1[(i+int(2*num_leds/3))%num_leds] = color_3
-        sendArray(array_1, ser)
-    sendArray(np.full((num_leds,3), [0]*3), ser)
+        sendArray(array_1, ser, fr)
+    sendArray(np.full((num_leds,3), [0]*3), ser, fr)
 
 ser = findArduino()
 if ser: 
-    testAnimation(72, ser)
+    testAnimation(72, ser, 50)
     ser.close()
 else:
     print("Could not find Arduino...")
