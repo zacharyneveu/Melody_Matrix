@@ -1,183 +1,53 @@
-# 19 July 2014
-
-# in case any of this upsets Python purists it has been converted from an equivalent JRuby program
-
-# this is designed to work with ... ArduinoPC2.ino ...
-
-# the purpose of this program and the associated Arduino program is to demonstrate a system for sending
-#   and receiving data between a PC and an Arduino.
-
-# The key functions are:
-#    sendToArduino(str) which sends the given string to the Arduino. The string may
-#                       contain characters with any of the values 0 to 255
-#
-#    recvFromArduino()  which returns an array.
-#                         The first element contains the number of bytes that the Arduino said it included in
-#                             message. This can be used to check that the full message was received.
-#                         The second element contains the message as a string
-
-
-# the overall process followed by the demo program is as follows
-#   open the serial connection to the Arduino - which causes the Arduino to reset
-#   wait for a message from the Arduino to give it time to reset
-#   loop through a series of test messages
-#      send a message and display it on the PC screen
-#      wait for a reply and display it on the PC
-
-# to facilitate debugging the Arduino code this program interprets any message from the Arduino
-#    with the message length set to 0 as a debug message which is displayed on the PC screen
-
-# the message to be sent to the Arduino starts with < and ends with >
-#    the message content comprises a string, an integer and a float
-#    the numbers are sent as their ascii equivalents
-#    for example <LED1,200,0.2>
-#    this means set the flash interval for LED1 to 200 millisecs
-#      and move the servo to 20% of its range
-
-# receiving a message from the Arduino involves
-#    waiting until the startMarker is detected
-#    saving all subsequent bytes until the end marker is detected
-
-# NOTES
-#       this program does not include any timeouts to deal with delays in communication
-#
-#       for simplicity the program does NOT search for the comm port - the user must modify the
-#         code to include the correct reference.
-#         search for the lines
-#               serPort = "/dev/ttyS80"
-#               baudRate = 9600
-#               ser = serial.Serial(serPort, baudRate)
-#
-
-
-#=====================================
-
-#  Function Definitions
-
-#=====================================
-
-def sendToArduino(sendStr):
-  ser.write(sendStr)
-
-
-#======================================
-
-def recvFromArduino():
-  global startMarker, endMarker
-
-  ck = ""
-  x = "z" # any value that is not an end- or startMarker
-  byteCount = -1 # to allow for the fact that the last increment will be one too many
-
-  # wait for the start character
-  while  ord(x) != startMarker:
-    x = ser.read()
-
-  # save data until the end marker is found
-  while ord(x) != endMarker:
-    if ord(x) != startMarker:
-      ck = ck + x
-      byteCount += 1
-    x = ser.read()
-
-  return(ck)
-
-
-#============================
-
-def waitForArduino():
-
-   # wait until the Arduino sends 'Arduino Ready' - allows time for Arduino reset
-   # it also ensures that any bytes left over from a previous message are discarded
-
-    global startMarker, endMarker
-
-    msg = ""
-    while msg.find("Arduino is ready") == -1:
-
-      while ser.inWaiting() == 0:
-        pass
-
-      msg = recvFromArduino()
-
-      print msg
-      print
-
-#======================================
-
-def runTest(td):
-  numLoops = len(td)
-  waitingForReply = False
-
-  n = 0
-  while n < numLoops:
-
-    teststr = td[n]
-
-    if waitingForReply == False:
-      b = bytearray(teststr.encode('utf-8'))
-      len(teststr.encode('utf-8'))
-      print b
-      sendToArduino(teststr)
-      print "Sent from PC -- LOOP NUM " + str(n) + " TEST STR " + teststr
-      waitingForReply = True
-
-    if waitingForReply == True:
-
-      while ser.inWaiting() == 0:
-        pass
-
-      dataRecvd = recvFromArduino()
-      print "Reply Received  " + dataRecvd
-      n += 1
-      waitingForReply = False
-
-      print "==========="
-
-    time.sleep(5)
-
-
-#======================================
-
-# THE DEMO PROGRAM STARTS HERE
-
-#======================================
-
+import numpy as np
 import serial
+import sys
+import glob
 import time
 
-print
-print
 
-# NOTE the user must ensure that the serial port and baudrate are correct
-serPort = "/dev/cu.usbmodem1421"
-baudRate = 9600
-ser = serial.Serial(serPort, baudRate)
-print "Serial port " + serPort + " opened  Baudrate " + str(baudRate)
+def findArduino():
+    if sys.platform.startswith('win'):
+        ports = ['COM%s' % (i + 1) for i in range(256)]
+    elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+        # this excludes your current terminal "/dev/tty"
+        ports = glob.glob('/dev/tty[A-Za-z]*')
+    elif sys.platform.startswith('darwin'):
+        ports = glob.glob('/dev/tty.*')
+    else:
+        raise EnvironmentError('Unsupported platform')
+    # Now look for usbmodem ports
+    port = [x for x in ports if 'usbmodem' in x]
+    if port:
+        ser = serial.Serial(port[0], 115200, timeout=10)
+        print('Connecting to: ', ser.port, '\n...')
+        time.sleep(2)
+        print('Connected to: ', ser.port, ' !')
+        return ser
+    else:
+        return 0
 
+def sendArray(colorArray, ser):
+    for value in colorArray.flatten():
+        byte = chr(int(value/2)).encode('utf-8')
+        ser.write(byte)
+    time.sleep(1/60)
 
-startMarker = 60
-endMarker = 62
+def testAnimation(num_leds, ser):
+    color_1 = [255,0,0]
+    color_2 = [0,255,0]
+    color_3 = [0,0,255]
+    array_1 = np.full((num_leds,3), [0]*3)
+    for i in range(num_leds):
+        array_1 = np.full((num_leds,3), [0]*3)
+        array_1[i] = color_1
+        array_1[(i+int(num_leds/3))%num_leds] = color_2
+        array_1[(i+int(2*num_leds/3))%num_leds] = color_3
+        sendArray(array_1, ser)
+    sendArray(np.full((num_leds,3), [0]*3), ser)
 
-
-waitForArduino()
-
-
-testData = []
-# testData.append("<255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.255,0,0.0,255,0.0,0,255.>")
-# testData.append("<0,255,0.255,0,0.0,0,255.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,255.>")
-# testData.append("<0,0,0.0,0,0.255,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.0,0,0.>")
-
-testData.append("<255,133,40.234,152,60.255,255,255.0,0,0.0,0,0>")
-testData.append("<133,255,40.60,234,152.0,0,0.50,50,50.0,0,0>")
-testData.append("<133,40,255.152,234,60.255,255,255.0,0,0.0,0,0>")
-# testData.append("<LED1,200>")
-# testData.append("<LED1,800>")
-# testData.append("<LED1,200>")
-# testData.append("<LED1,800>")
-# testData.append("<LED1,200>")
-
-runTest(testData)
-
-
-ser.close
+ser = findArduino()
+if ser:
+    testAnimation(60, ser)
+    ser.close()
+else:
+    print("Could not find Arduino...")
