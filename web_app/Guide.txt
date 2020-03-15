@@ -1,0 +1,1 @@
+Use the 'live-server' the plugin of VS Code to run the page on a server
