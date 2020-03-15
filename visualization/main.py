@@ -2,6 +2,7 @@ import numpy as np
 import webcolors
 
 from color_code import color_code
+
 # Note holds velocity and pitch values along with ways to access them in
 # velocity, octave, note letter format
 
@@ -545,12 +546,13 @@ def test_array_generator(genre_name):
 	tem_array = traverseMatrix(matrix_array)
 	return tem_array
 
-# if __name__ == "__main__":
-#     main()
-
-
 # test_array = test_array_generator('default')
 # print('This is the test_array: \n', test_array)
-test_function(frame_test)
-output_list = traverseMatrix(matrix_array)
-print(output_list)
+def main():
+	test_function(frame_test)
+	output_list = traverseMatrix(matrix_array)
+	print(output_list)
+
+if __name__ == "__main__":
+     main()
+
