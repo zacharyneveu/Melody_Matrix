@@ -8,10 +8,13 @@ fetch('http://127.0.0.1:5500/data.json').then((response) => {
 
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
+    easycam = createEasyCam();
+    document.oncontextmenu = () => false;
+    easycam.setDistance(1500, 0);
 }
 
 function draw() {
-    let maxOffset = min(400, width / 2, height / 2)
+    // let maxOffset = min(400, width / 2, height / 2)
 
     function colorPart(x_value, y_value, z_value) {
         let arr = datas[5 - y_value][5 - z_value][x_value]
@@ -30,11 +33,11 @@ function draw() {
     }
 
     background(155);
-    translate(0, 0, -500);
+    // translate(0, 0, -500);
     // rotateX(PI/4)
     // rotateX(millis() / 2000);
     //rotateZ(millis() / 2000);
-    rotateY(millis() / 1000);
+    //rotateY(millis() / 1000);
     // const cosOverTime = cos(millis() / 2000)
     // const changingMaxRadius = createVector(map(cosOverTime, -1, 1, maxOffset, maxOffset * 2), 0, 0);
 
