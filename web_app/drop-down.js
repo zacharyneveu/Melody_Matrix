@@ -4,7 +4,7 @@ let sel;
 function setup() {
   textAlign(CENTER);
   background(200);
-  // mic set as defualt
+  // mic set as default
   mic = new p5.AudioIn();
   mic.start();
   sel = createSelect();
