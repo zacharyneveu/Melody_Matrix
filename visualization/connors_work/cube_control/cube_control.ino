@@ -1,7 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 
 #define PIN      6
-#define N_LEDS  72
+#define N_LEDS  216
 const int buffer_size = N_LEDS * 3;
 char pixel_buffer[buffer_size];
 int receivedBytes;

@@ -66,7 +66,7 @@ class Frame:
 
     def __init__(self, notes, genre):
         self.notes = notes
-        assert type(notes[0]) is Note, "notes should be an array of type `Note`"
+        #assert type(notes[0]) is Note, "notes should be an array of type `Note`"
         self.genre = genre
         assert type(genre) is Genre, "genre should be of type Genre"
 
@@ -106,7 +106,8 @@ class Cube:
         
         # display from octave 1 up to size of cube in octaves
         # return None if y invalid (out of range)
-        y = int((note.pitch-12) // 12) if 12 <= note.pitch < (self.size+1)*12 else None
+        offset = 12
+        y = int((note.pitch-offset) // 12) if offset <= note.pitch < (self.size+1)*offset else None
         if y is None or x is None:
             return None
         z = self.matrix[x][y].index("#000000")
@@ -124,7 +125,7 @@ class Cube:
             hex_code = "#"+genre.colors[note_in_octave]
             hls = list(colorsys.rgb_to_hls(*wc.hex_to_rgb(hex_code)))
             # update lightness based on velocity but from 0-255
-            hls[1] = note.velocity * 2
+            hls[1] = note.velocity# * 2
             rgb = colorsys.hls_to_rgb(*[int(round(x)) for x in hls])
             #wc.rgb_to_hex([int(x) for x in rgb])
             return hex_code
@@ -151,20 +152,20 @@ class Cube:
 
         """
         if(x % 2 == 1):
-            i = 6 * x + (5 - y % 6) + 36 * z
+            i = 6 * x + (5 - y) + 36 * z
         else:
             i = 6 * x + y + 36 * z
         return i
     
     def display(self):
-        rgbs = [[[wc.hex_to_rgb(self.matrix[x][y][z]) for x in range(self.size)] 
+        rgbs = [[[wc.hex_to_rgb(self.matrix[x][y][z]) for z in range(self.size)] 
                                                       for y in range(self.size)] 
-                                                      for z in range(self.size)]
+                                                      for x in range(self.size)]
         nparr = np.zeros((self.size**3, 3))
         for x in range(self.size):
             for y in range(self.size):
                 for z in range(self.size):
-                    nparr[self.coords2Index(x, y, z),:] = rgbs[x][y][z]
+                    nparr[self.coords2Index(x, y, z),:] = tuple(rgbs[x][y][z])
         self.arduino.sendArray(nparr)
         
     
@@ -184,34 +185,9 @@ class Cube:
             except:
                 continue
             color = self.get_color(frame.genre, note)
-            print(f"{x}, {y}, {z}, {color}")
+            #print(f"{x}, {y}, {z}, {color}")
             self.matrix[x][y][z] = color
         
-
-
-# In[72]:
-
-
-from random import randint
-
-#notes = [Note(40, 83, 10), Note(87, 19, 121), Note(20, 51, 64)]
-notes = [Note(randint(10,127),i,randint(0,127)) for i in range(12, 127)]
-f = Frame(notes, Genre('default'))
-
-c = Cube(6)
-
-c.process_frame(f)
-
-[display(c.display_screen(i)) for i in range(c.size)]
-
-
-# In[74]:
-
-
-c.display()
-
-
-# In[ ]:
 
 
 
