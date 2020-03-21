@@ -7,9 +7,13 @@ function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
     setInterval(loadData, 100)
     frameRate(fr);
-    easycam = createEasyCam();
+    Dw.EasyCam.prototype.apply = function(n) {
+        var o = this.cam;
+        n = n || o.renderer,
+          n && (this.camEYE = this.getPosition(this.camEYE), this.camLAT = this.getCenter(this.camLAT), this.camRUP = this.getUpVector(this.camRUP), n._curCamera.camera(this.camEYE[0], this.camEYE[1], this.camEYE[2], this.camLAT[0], this.camLAT[1], this.camLAT[2], this.camRUP[0], this.camRUP[1], this.camRUP[2]))
+      };
+    easycam = createEasyCam(this._renderer, {distance:1000});
     document.oncontextmenu = () => false;
-    easycam.setDistance(1000, 0);
 }
 
 function gotData(data) {
