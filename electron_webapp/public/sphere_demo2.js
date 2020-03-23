@@ -1,6 +1,7 @@
 const datas = require('./data.json');
 
 let fr = 500;
+let mic, fft;
 
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
@@ -8,10 +9,21 @@ function setup() {
     Dw.EasyCam.prototype.apply = function(n) {
         var o = this.cam;
         n = n || o.renderer,
-          n && (this.camEYE = this.getPosition(this.camEYE), this.camLAT = this.getCenter(this.camLAT), this.camRUP = this.getUpVector(this.camRUP), n._curCamera.camera(this.camEYE[0], this.camEYE[1], this.camEYE[2], this.camLAT[0], this.camLAT[1], this.camLAT[2], this.camRUP[0], this.camRUP[1], this.camRUP[2]))
-      };
+        n && (this.camEYE = this.getPosition(this.camEYE), 
+        this.camLAT = this.getCenter(this.camLAT), 
+        this.camRUP = this.getUpVector(this.camRUP), 
+        n._curCamera.camera(this.camEYE[0], this.camEYE[1], 
+                            this.camEYE[2], this.camLAT[0], 
+                            this.camLAT[1], this.camLAT[2], 
+                            this.camRUP[0], this.camRUP[1], 
+                            this.camRUP[2]))
+    };
     easycam = createEasyCam(this._renderer, {distance:1000});
     document.oncontextmenu = () => false;
+    mic = new p5.AudioIn();
+    mic.start();
+    fft = new p5.FFT();
+    fft.setInput(mic);
 }
 
 function draw() {
@@ -34,19 +46,21 @@ function draw() {
 
     background(155);
     
-    rotateY(millis() / 1000);
+    // rotateY(millis() / 1000);
+    fft.analyze();
 
     forRange(x => forRange(y => forRange(z => {
         let pos = createVector(x, y, z);
-        noStroke()
+        noStroke();
         push();
         translate(pos.x, pos.y, pos.z);
-        let index_x = coordToIndex(x)
-        let index_y = coordToIndex(y)
-        let index_z = coordToIndex(z)
+        let index_x = coordToIndex(x);
+        let index_y = coordToIndex(y);
+        let index_z = coordToIndex(z);
         let tem_arr = colorPart(index_x, index_y, index_z)
         fill(parseInt(tem_arr[0]), parseInt(tem_arr[1]), parseInt(tem_arr[2]));
-        sphere(18)
+        sphereSz = 20+20*mic.getLevel();
+        sphere(sphereSz);
         pop();
     })))
 
