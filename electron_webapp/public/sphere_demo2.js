@@ -1,7 +1,13 @@
-const datas = require('./data.json');
+const datas = require('./assets/data_new.json');
+const colors = require('./assets/colors_rgb.json');
 
 let fr = 500;
-let mic, fft;
+// let mic;
+let fft, sound, amplitude;
+
+function preload(){
+    sound = loadSound('assets/event_horizon_test.wav');
+}
 
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
@@ -20,17 +26,45 @@ function setup() {
     };
     easycam = createEasyCam(this._renderer, {distance:1000});
     document.oncontextmenu = () => false;
-    mic = new p5.AudioIn();
-    mic.start();
+    // mic = new p5.AudioIn(); 
+    // mic.start();
+    sound.amp(1);
+    sound.loop();
     fft = new p5.FFT();
-    fft.setInput(mic);
+    amplitude = new p5.Amplitude();
 }
 
 function draw() {
+    let x,y,z;
+    let freq, energy, color;
+
+    function reset() {
+        for( var xp=0;xp<6;xp++){
+            for( var yp=0;yp<6;yp++){
+                for( var zp=0;zp<6;zp++){
+                    datas[xp][yp][zp] = (0,0,0);
+                }
+            }
+        }
+    }
+
+    function buildDatas() {
+        let spectrum = fft.analyze();
+        for (var midiNote = 0; midiNote<72; midiNote++){
+            freq = midiToFreq(midiNote);
+            energy = Math.floor(fft.getEnergy(freq)/255);
+            color = colors["default"][midiNote%12]*energy;
+            y = Math.floor(midiNote/12)%6;
+            z = 5-5*energy;
+            for (x=0; x<6; x++){
+                datas[x][y][z] = color;
+            }
+        }
+    }
 
     function colorPart(x_value, y_value, z_value) {
         let arr = datas[5 - y_value][5 - z_value][x_value]
-        return arr.split(',')
+        return arr
     }
 
     function forRange(fn) {
@@ -47,7 +81,8 @@ function draw() {
     background(155);
     
     // rotateY(millis() / 1000);
-    fft.analyze();
+    reset();
+    buildDatas();
 
     forRange(x => forRange(y => forRange(z => {
         let pos = createVector(x, y, z);
@@ -57,10 +92,11 @@ function draw() {
         let index_x = coordToIndex(x);
         let index_y = coordToIndex(y);
         let index_z = coordToIndex(z);
-        let tem_arr = colorPart(index_x, index_y, index_z)
-        fill(parseInt(tem_arr[0]), parseInt(tem_arr[1]), parseInt(tem_arr[2]));
-        sphereSz = 20+20*mic.getLevel();
-        sphere(sphereSz);
+        if(datas){
+            let tem_arr = colorPart(index_x, index_y, index_z)
+            fill(tem_arr[0], tem_arr[1], tem_arr[2]);
+        }
+        sphere(10+10*amplitude.getLevel());
         pop();
     })))
 
