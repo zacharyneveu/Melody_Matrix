@@ -36,7 +36,7 @@ function setup() {
 
 function draw() {
     let x,y,z;
-    let freq, energy, color;
+    let freq, energy, maxenergy, color;
 
     function reset() {
         for( var xp=0;xp<6;xp++){
@@ -50,12 +50,20 @@ function draw() {
 
     function buildDatas() {
         let spectrum = fft.analyze();
-        for (var midiNote = 0; midiNote<72; midiNote++){
+        maxenergy = 0;
+        for (var midiNote = 0; midiNote<128; midiNote++){
             freq = midiToFreq(midiNote);
-            energy = Math.floor(fft.getEnergy(freq)/255);
-            color = colors["default"][midiNote%12]*energy;
+            energy = fft.getEnergy(freq);
+            if(energy > maxenergy){
+                maxenergy = energy;
+            }
+        }
+        for (var midiNote = 0; midiNote<128; midiNote++){
+            freq = midiToFreq(midiNote);
+            energy = fft.getEnergy(freq)/maxenergy;
+            color = colors["default"][midiNote%12];
             y = Math.floor(midiNote/12)%6;
-            z = 5-5*energy;
+            z = Math.floor(5*energy);
             for (x=0; x<6; x++){
                 datas[x][y][z] = color;
             }
