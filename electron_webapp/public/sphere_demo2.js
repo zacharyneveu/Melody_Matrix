@@ -28,7 +28,7 @@ function setup() {
     document.oncontextmenu = () => false;
     // mic = new p5.AudioIn(); 
     // mic.start();
-    sound.amp(1);
+    sound.amp(0.2);
     sound.loop();
     fft = new p5.FFT();
     amplitude = new p5.Amplitude();
@@ -61,7 +61,7 @@ function draw() {
         for (var midiNote = 0; midiNote<128; midiNote++){
             freq = midiToFreq(midiNote);
             energy = fft.getEnergy(freq)/maxenergy;
-            color = colors["default"][midiNote%12];
+            color = colors["r&b"][midiNote%12].map(x => x * energy);
             y = Math.floor(midiNote/12)%6;
             z = Math.floor(5*energy);
             for (x=0; x<6; x++){
@@ -89,7 +89,6 @@ function draw() {
     background(155);
     
     // rotateY(millis() / 1000);
-    reset();
     buildDatas();
 
     forRange(x => forRange(y => forRange(z => {
