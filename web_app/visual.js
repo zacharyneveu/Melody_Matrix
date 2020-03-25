@@ -70,6 +70,9 @@ function getY(node_value, x_value) {
         return tem_arr[2]
     }
     else {
+        colorStack(x_value, tem_arr[0], 0, defaultColor)
+        colorStack(x_value, tem_arr[1], 0, defaultColor)
+        colorStack(x_value, tem_arr[2], 0, defaultColor)
         return tem_arr[0]
     }
 }
@@ -162,7 +165,7 @@ function generateFrames(genreName) {
 // this function will handle 
 function displayFrame() {
 
-    frame = generateFrames('pop')
+    frame = generateFrames('default')
     //console.log('frame', frame)
     //get the genre
     let genreName = frame.Genre
@@ -192,7 +195,7 @@ function displayFrame() {
 
     //colorStack(xValue, yValue, zValue)
     //export the matrix
-    localStorage.setItem("color_data", JSON.stringify(matrix_array));
+    sessionStorage.setItem("color_data", JSON.stringify(matrix_array));
 
 }
 
