@@ -2,17 +2,18 @@ var color_data = { "0": { "0": ["0,0,0", "0,0,0", "0,0,0", "0,0,0", "0,0,0", "0,
 
 var urls = "http://127.0.0.1:5500/web_app/data.json";
 let fr = 500
-
+let volume = 1
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
-    setInterval(loadData, 100)
+    setInterval(loadData, 500)
+    //setInterval(changeVolume, 100)
     frameRate(fr);
-    Dw.EasyCam.prototype.apply = function(n) {
+    Dw.EasyCam.prototype.apply = function (n) {
         var o = this.cam;
         n = n || o.renderer,
-          n && (this.camEYE = this.getPosition(this.camEYE), this.camLAT = this.getCenter(this.camLAT), this.camRUP = this.getUpVector(this.camRUP), n._curCamera.camera(this.camEYE[0], this.camEYE[1], this.camEYE[2], this.camLAT[0], this.camLAT[1], this.camLAT[2], this.camRUP[0], this.camRUP[1], this.camRUP[2]))
-      };
-    easycam = createEasyCam(this._renderer, {distance:1000});
+            n && (this.camEYE = this.getPosition(this.camEYE), this.camLAT = this.getCenter(this.camLAT), this.camRUP = this.getUpVector(this.camRUP), n._curCamera.camera(this.camEYE[0], this.camEYE[1], this.camEYE[2], this.camLAT[0], this.camLAT[1], this.camLAT[2], this.camRUP[0], this.camRUP[1], this.camRUP[2]))
+    };
+    easycam = createEasyCam(this._renderer, { distance: 1000 });
     document.oncontextmenu = () => false;
 }
 
@@ -21,11 +22,15 @@ function gotData(data) {
 }
 
 function loadData() {
-    loadJSON(urls, gotData)
+    color_data = JSON.parse(localStorage.getItem("color_data"));
 }
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight)
+}
+
+function changeVolume() {
+    volume = Math.random() % 10 + 1
 }
 
 function draw() {
@@ -46,15 +51,13 @@ function draw() {
         return (num / 50 + 5) / 2
     }
 
+    // comment out this line below and see magic happens
     background(155);
 
     // translate(0, 0, -500);
 
     rotateY(millis() / 2000);
 
-    // let size = Math.random() % 10 *25
-    // let volume = Math.random() % 1 + 1
-    let volume = 1
 
     forRange(x => forRange(y => forRange(z => {
         let pos = createVector(x, y, z);
