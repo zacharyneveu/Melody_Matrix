@@ -11,6 +11,14 @@ function preload(){
 
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
+    textAlign(CENTER);
+    sel = createSelect();
+    sel.position(10, 10);
+    sel.option('mic');
+    sel.option('1'); // two other input sources
+    sel.option('2');
+    sel.selected('mic');
+    sel.changed(mySelectEvent);
     frameRate(fr);
     Dw.EasyCam.prototype.apply = function(n) {
         var o = this.cam;
@@ -32,6 +40,12 @@ function setup() {
     sound.loop();
     fft = new p5.FFT();
     amplitude = new p5.Amplitude();
+}
+
+function mySelectEvent() {
+    // mic set as default
+    mic = new p5.AudioIn();
+    mic.start();
 }
 
 function draw() {
