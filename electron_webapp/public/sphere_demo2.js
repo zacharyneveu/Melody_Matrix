@@ -6,7 +6,7 @@ let fr = 500;
 let fft, sound, amplitude;
 
 function preload(){
-    sound = loadSound('assets/event_horizon_test.wav');
+    sound = loadSound('assets/cat_tes.wav');
 }
 
 function setup() {
@@ -50,22 +50,24 @@ function draw() {
 
     function buildDatas() {
         let spectrum = fft.analyze();
-        maxenergy = 0;
-        for (var midiNote = 0; midiNote<128; midiNote++){
-            freq = midiToFreq(midiNote);
-            energy = fft.getEnergy(freq);
-            if(energy > maxenergy){
-                maxenergy = energy;
-            }
-        }
+        maxenergy = 255;
+        // for (var midiNote = 0; midiNote<128; midiNote++){
+        //     freq = midiToFreq(midiNote);
+        //     energy = fft.getEnergy(freq);
+        //     if(energy > maxenergy){
+        //         maxenergy = energy;
+        //     }
+        // }
         for (var midiNote = 0; midiNote<128; midiNote++){
             freq = midiToFreq(midiNote);
             energy = fft.getEnergy(freq)/maxenergy;
-            color = colors["r&b"][midiNote%12].map(x => x * energy);
-            y = Math.floor(midiNote/12)%6;
-            z = Math.floor(5*energy);
-            for (x=0; x<6; x++){
-                datas[x][y][z] = color;
+            if(energy > 0.2){
+                color = colors["edm"][midiNote%12].map(x => x * energy);
+                y = Math.floor(midiNote/12)%6;
+                z = midiNote%6;
+                for (x=0; x<6; x++){
+                    datas[x][y][z] = color.concat(energy);
+                }
             }
         }
     }
@@ -86,9 +88,10 @@ function draw() {
         return (num / 50 + 5) / 2
     }
 
-    background(155);
+    background(0);
     
     // rotateY(millis() / 1000);
+    reset();
     buildDatas();
 
     forRange(x => forRange(y => forRange(z => {
@@ -102,9 +105,9 @@ function draw() {
         if(datas){
             let tem_arr = colorPart(index_x, index_y, index_z)
             fill(tem_arr[0], tem_arr[1], tem_arr[2]);
+            sphere(1+20*tem_arr[3]);
+            pop();
         }
-        sphere(10+10*amplitude.getLevel());
-        pop();
     })))
 
 }

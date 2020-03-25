@@ -15,5 +15,5 @@ with open('data_new.json', 'w') as f:
     for x in data:
         for y in data[x]:
             for z in range(6):
-                data[x][y][z] = (0,0,0)
+                data[x][y][z] = (0,0,0,0)
     json.dump(data,f)
