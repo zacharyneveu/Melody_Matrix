@@ -3,10 +3,10 @@ const colors = require('./assets/colors_rgb.json');
 
 let fr = 500;
 // let mic;
-let fft, sound, amplitude;
+let fft, sound;
 
 function preload(){
-    sound = loadSound('assets/cat_tes.wav');
+    sound = loadSound('assets/event_horizon_test.wav');
 }
 
 function setup() {
@@ -36,10 +36,9 @@ function setup() {
     document.oncontextmenu = () => false;
     // mic = new p5.AudioIn(); 
     // mic.start();
-    sound.amp(0.2);
+    sound.amp(1);
     sound.loop();
     fft = new p5.FFT();
-    amplitude = new p5.Amplitude();
 }
 
 function mySelectEvent() {
@@ -51,6 +50,7 @@ function mySelectEvent() {
 function draw() {
     let x,y,z;
     let freq, energy, maxenergy, color;
+    let thresh;
 
     function reset() {
         for( var xp=0;xp<6;xp++){
@@ -65,17 +65,12 @@ function draw() {
     function buildDatas() {
         let spectrum = fft.analyze();
         maxenergy = 255;
-        // for (var midiNote = 0; midiNote<128; midiNote++){
-        //     freq = midiToFreq(midiNote);
-        //     energy = fft.getEnergy(freq);
-        //     if(energy > maxenergy){
-        //         maxenergy = energy;
-        //     }
-        // }
-        for (var midiNote = 0; midiNote<128; midiNote++){
+        thresh = 0.3;
+        for (var midiNote = 0; midiNote<72; midiNote++){
             freq = midiToFreq(midiNote);
             energy = fft.getEnergy(freq)/maxenergy;
-            if(energy > 0.2){
+            if(energy > thresh){
+                energy = (energy-thresh)/(1-thresh);
                 color = colors["edm"][midiNote%12].map(x => x * energy);
                 y = Math.floor(midiNote/12)%6;
                 z = midiNote%6;
@@ -105,7 +100,7 @@ function draw() {
     background(0);
     
     // rotateY(millis() / 1000);
-    reset();
+    // reset();
     buildDatas();
 
     forRange(x => forRange(y => forRange(z => {

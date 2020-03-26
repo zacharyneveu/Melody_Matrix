@@ -6,6 +6,7 @@ class CubeController {
     }
 
     dataRequest() {
+        this.cubeModel.updateData();
         console.log(this.cubeModel.modelData);
         return this.cubeModel.modelData;
     }
