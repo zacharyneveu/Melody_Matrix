@@ -165,7 +165,7 @@ function generateFrames(genreName) {
 // this function will handle 
 function displayFrame() {
 
-    frame = generateFrames('default')
+    frame = generateFrames('pop')
     //console.log('frame', frame)
     //get the genre
     let genreName = frame.Genre
