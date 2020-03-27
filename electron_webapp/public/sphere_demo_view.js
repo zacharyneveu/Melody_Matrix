@@ -20,7 +20,6 @@ function preload(){
 }
 
 function setup() {
-    controller = new cubeController.CubeController();
     createCanvas(windowWidth, windowHeight, WEBGL);
     frameRate(fr);
     Dw.EasyCam.prototype.apply = function(n) {
@@ -41,6 +40,9 @@ function setup() {
     sound.amp(1);
     sound.loop();
     fft = new p5.FFT();
+
+    controller = new cubeController.CubeController();
+    controller.start();
 }
 
 function draw() {

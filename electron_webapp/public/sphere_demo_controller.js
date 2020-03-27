@@ -3,30 +3,53 @@ let sphereModel = require('./sphere_demo_model.js');
 class CubeController {
     constructor () {
         this.cubeModel = new sphereModel.CubeModel();
-	this.timer = this.createTimer();
+        this.thresh = 0.3;
+        this.maxenergy = 255;
+        this.spectrum;
+    }
+
+    start() {
+        this.updateModel();
+        this.timer = setInterval(() => this.updateModel(), 1000);
+    }
+
+    updateNotes() {
+        this.cubeModel.clearNotes();
+        this.spectrum = fft.analyze();  // spectral analysis
+        let amp;
+        for (var midiNote = 0; midiNote<127; midiNote++){
+            var note_obj = {
+                midiVal: 0,
+                energy: 0
+            }
+            // get energy of the note
+            amp = fft.getEnergy(midiToFreq(midiNote))/this.maxenergy;
+            console.log(amp);
+            // if energy surpasses threshold, add note to list
+            if(amp > this.thresh){
+                note_obj.midiVal = midiNote;
+                note_obj.energy  = (amp-this.thresh)/(1-this.thresh);
+                console.log(note_obj);        
+                this.cubeModel.pushNote(note_obj);
+            }
+        }
+        // console.log(JSON.stringify(this.cubeModel.modelData));
     }
 
     dataRequest() {
-	// this.cubeModel.updateNotes();
-	// this.cubeModel.updateGenre();
-        console.log(JSON.stringify(this.cubeModel.modelData));
+        this.updateNotes();
+        // console.log(JSON.stringify(this.cubeModel.modelData));
         return this.cubeModel.modelData;
     }
 
     updateModel() {
-        this.cubeModel.updateNotes();
+        // this.updateNotes(); this part needs to be within the dataRequest function by the nature of the p5 fft library...
         this.cubeModel.updateGenre();
     }
 
     handleReceiveData(jsonData) {
         this.cubeModel.updateData(jsonData);
     }
-
-    createTimer() {
-	return setInterval(this.updateModel, 1000); 
-    }
 };
 
 module.exports.CubeController = CubeController;
-
-// need to add some sort of listener for incoming data from the ML... not sure how to implement this yet.
