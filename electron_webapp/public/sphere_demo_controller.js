@@ -6,11 +6,13 @@ class CubeController {
     }
 
     dataRequest() {
-        this.cubeModel.updateData();
-        console.log(this.cubeModel.modelData);
+        this.cubeModel.updateNotes();
+        // TODO: figure out how to only updateGenre() every n seconds or something
+        this.cubeModel.updateGenre(); 
+        console.log(JSON.stringify(this.cubeModel.modelData));
         return this.cubeModel.modelData;
     }
-      
+
     handleReceiveData(jsonData) {
         this.cubeModel.updateData(jsonData);
     }

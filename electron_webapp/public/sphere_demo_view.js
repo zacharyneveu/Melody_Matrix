@@ -1,5 +1,14 @@
-let datas;
+let blankCube      = require('./assets/data_new.json');
+let colors         = require('./assets/colors_rgb.json');
 let cubeController = require('./sphere_demo_controller.js');
+const defaultColor = [0,0,0];
+//Depending on the note value, the range of y varies
+const y_range1 = [0, 1, 2]
+const y_range2 = [5, 4, 3]
+//The matrix_array(str) will be ued to store the hex code
+const length = 6;
+let range = new Array(length).fill();
+let matrix_array = range.map(e => range.map(e => range.map(e => e)));
 
 var controller;
 
@@ -7,7 +16,7 @@ let fr = 500;
 let fft, sound;
 
 function preload(){
-    sound = loadSound('assets/event_horizon_test.wav');
+    sound = loadSound('assets/cat_tes.wav');
 }
 
 function setup() {
@@ -36,15 +45,77 @@ function setup() {
 
 function draw() {
 
-    // function colorPart(x_value, y_value, z_value) {
-    //     // this part where we update datas is where the controller is going to come into play,
-    //     // worth considering whether the view triggers the controller or vice versa.
-    //     // what is going to dictate the rate at which the frame refreshes...
-    //     datas = controller.dataRequest();
-    //     console.log(datas);
-    //     let arr = datas[5 - y_value][5 - z_value][x_value]
-    //     return arr
-    // }
+    function value_limit(val, min, max) {
+        return val < min ? min : (val > max ? max : val);
+      }
+
+    function getX(node_value) {
+        return node_value%6;
+    }
+
+    function getY(node_value, x_value) {
+        let tem_arr = []
+        if (node_value<6) {
+            tem_arr = y_range1
+    
+        } else {
+            tem_arr = y_range2
+        }
+    
+        if (matrix_array[0][tem_arr[0]][x_value] == defaultColor) {
+            return tem_arr[0]
+        }
+        else if (matrix_array[0][tem_arr[1]][x_value] == defaultColor) {
+            return tem_arr[1]
+        }
+        else if (matrix_array[0][tem_arr[2]][x_value] == defaultColor) {
+            return tem_arr[2]
+        }
+        else {
+            colorStack(x_value, tem_arr[0], 0, defaultColor)
+            colorStack(x_value, tem_arr[1], 0, defaultColor)
+            colorStack(x_value, tem_arr[2], 0, defaultColor)
+            return tem_arr[0]
+        }
+    }
+
+    function colorStack(x, y, z, colorString) {
+        if (matrix_array[0][y][x] != defaultColor) {
+            for (let i = 0; i < 6; i++)
+                matrix_array[i][y][x] = defaultColor
+        }
+        for (let j = 0; j <= z; j++)
+            matrix_array[j][y][x] = colorString
+    }
+
+    function initMatrixArray(){
+        matrix_array.forEach(function (row) {
+            row.forEach(function (col) {
+                col.forEach(function (item, index) {
+                    col[index] = defaultColor
+                })
+            })
+        })
+    }
+
+    function getFrame(x_value, y_value, z_value) {
+        initMatrixArray();
+        let modelData = controller.dataRequest();
+        let frame = blankCube;
+        let node, octave, color;
+        let xPos, yPos, zPos;
+        modelData.notes.forEach(note => {
+            node = note.midiVal%12;
+            octave = Math.floor(note.midiVal/12);
+            xPos = getX(node);
+            yPos = getY(node, xPos);
+            zPos = value_limit(octave,0,5);
+            color = colors[modelData.genre][node].map(x => x * note.energy);
+            frame[xPos][yPos][zPos] = color.concat(note.energy);
+        });
+
+        return frame
+    }
 
     function forRange(fn) {
         const cubeSpacing = 100
@@ -57,9 +128,9 @@ function draw() {
         return (num / 50 + 5) / 2
     }
 
-    background(0);
+    background(100);
 
-    datas = controller.dataRequest();
+    datas = getFrame();
 
     forRange(x => forRange(y => forRange(z => {
         let pos = createVector(x, y, z);
@@ -71,8 +142,8 @@ function draw() {
         let index_z = coordToIndex(z)
         if(datas){
             let tem_arr = datas[index_x][index_y][index_z];
-            fill(parseInt(tem_arr[0]), parseInt(tem_arr[1]), parseInt(tem_arr[2]));
-            sphere(0+20*tem_arr[3]);
+            fill(tem_arr[0], tem_arr[1], tem_arr[2]);
+            sphere(1+20*tem_arr[3]);
             pop();
         }
     })))
