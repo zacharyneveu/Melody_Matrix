@@ -9,7 +9,7 @@ const note_full_list = ["C", "C#", "D", "D#", "E", "F", "B", "A#", "A", "G#", "G
 const y_range1 = [0, 1, 2]
 const y_range2 = [5, 4, 3]
 
-const defaultColor = '0, 0, 0'
+const defaultColor = 0
 
 const color_codes = {
     'class': ["#924341", "#B26A42", "#D29044", "#F2B745", "#F5C667", "#F8D489", "#FBE3AB", "#FCECC2", "#FEF6D9", "#fffff0", "#DBC0B6", "#B6827B"],
@@ -22,6 +22,8 @@ const color_codes = {
     'blues': ['#13264E', '#2E3B56', '#484F5E', '#636466', '#735B5C', '#825153', '#924849', '#78437A', '#5E3FAA', '#443ADB', '#3433AC', '#232D7D'],
     'default': ["#AB0034", "#AA667B", "#BC448B", "#BB75FC", "#9000FF", "#808CFC", "#8ECAFF", "#C3F1FF", "#32CD34", "#FFFF01", "#FF8814", "#ff0000"],
 }
+
+const note_names = ["C_color", "Cb_color", "D_color", "Db_color", "E_color", "F_color", "Fb_color", "G_color", "Gb_color", "A_color", "Ab_color", "B_color"]
 
 var C_color, Cb_color, D_color, Db_color, E_color, F_color, Fb_color, G_color, Gb_color, A_color, Ab_color, B_color
 
@@ -86,18 +88,6 @@ function pitchToOctave(pitch_num) {
         return 6
     }
     return Math.floor(pitch_num / 12) - 1
-    // if midi_num <= 35:
-    //         return 1
-    // elif midi_num >= 36 and midi_num <= 47:
-    //     return 2
-    // elif midi_num >= 48 and midi_num <= 59:
-    //     return 3
-    // elif midi_num >= 60 and midi_num <= 71:
-    //     return 4
-    // elif midi_num >= 72 and midi_num <= 83:
-    //     return 5
-    // else:
-    //     return 6
 }
 
 
@@ -128,23 +118,18 @@ function hexToRGB(h) {
 
 function genreToColor(g_name) {
     let color_arr = color_codes[g_name]
-    color_arr.forEach(function (item, index) {
+
+    color_arr.forEach((item, index) => {
         color_arr[index] = hexToRGB(item)
     })
 
-    //ES6 destructing assignment not supported?
-    C_color = color_arr[0]
-    Cb_color = color_arr[1]
-    D_color = color_arr[2]
-    Db_color = color_arr[3]
-    E_color = color_arr[4]
-    F_color = color_arr[5]
-    Fb_color = color_arr[6]
-    G_color = color_arr[7]
-    Gb_color = color_arr[8]
-    A_color = color_arr[9]
-    Ab_color = color_arr[10]
-    B_color = color_arr[11]
+    note_names.forEach((item, index) => {
+        if (sessionStorage.getItem(item) === null) {
+            sessionStorage.setItem(item, color_arr[index])
+        }
+    })
+
+
 }
 
 function colorStack(x, y, z, colorString) {
@@ -166,32 +151,26 @@ function generateFrames(genreName) {
 function displayFrame() {
 
     frame = generateFrames('pop')
-    //console.log('frame', frame)
+    genreToColor('pop')
+
     //get the genre
     let genreName = frame.Genre
     let pitchValue = frame.Node.pitch
 
-    //console.log('This is the pitchValue: ' + pitchValue)
     let nodeValue = pitchToNode(pitchValue)
     let octave = pitchToOctave(pitchValue)
 
-    //console.log('This is the nodeValue: ' + nodeValue)
-    //console.log('This is the octave', octave)
-
     //calculate the x y z
     let xValue = getX(nodeValue)
-    //console.log('This is the xValue: ' + xValue)
     let yValue = getY(nodeValue, xValue)
-    //console.log('This is the yValue: ' + yValue)
     let zValue = octave - 1
-    //console.log('This is the zValue: ' + zValue)
+
 
     let colorIndex = note_full_list.indexOf(nodeValue)
     let colorString = color_codes[genreName.toLowerCase()][colorIndex]
-    //console.log('This is the colorstring: ', hexToRGB(colorString))
-    //console.log('This is the colorstring in hex format: ', colorString)
+
     //update the matrix
-    colorStack(xValue, yValue, zValue, hexToRGB(colorString))
+    colorStack(xValue, yValue, zValue, 1)
 
     //colorStack(xValue, yValue, zValue)
     //export the matrix
