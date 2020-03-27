@@ -7,8 +7,8 @@ class CubeController {
     }
 
     dataRequest() {
-	this.cubeModel.updateNotes();
-	this.cubeModel.updateGenre();
+	// this.cubeModel.updateNotes();
+	// this.cubeModel.updateGenre();
         console.log(JSON.stringify(this.cubeModel.modelData));
         return this.cubeModel.modelData;
     }
