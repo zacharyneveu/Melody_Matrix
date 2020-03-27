@@ -53,7 +53,7 @@ function draw() {
         return node_value%6;
     }
 
-    function getY(node_value, x_value) {
+    function getY(node_value, x_value, z_value) {
         let tem_arr = []
         if (node_value<6) {
             tem_arr = y_range1
@@ -62,19 +62,19 @@ function draw() {
             tem_arr = y_range2
         }
     
-        if (matrix_array[0][tem_arr[0]][x_value] == defaultColor) {
+        if (matrix_array[z_value][tem_arr[0]][x_value] == defaultColor) {
             return tem_arr[0]
         }
-        else if (matrix_array[0][tem_arr[1]][x_value] == defaultColor) {
+        else if (matrix_array[z_value][tem_arr[1]][x_value] == defaultColor) {
             return tem_arr[1]
         }
-        else if (matrix_array[0][tem_arr[2]][x_value] == defaultColor) {
+        else if (matrix_array[z_value][tem_arr[2]][x_value] == defaultColor) {
             return tem_arr[2]
         }
         else {
-            colorStack(x_value, tem_arr[0], 0, defaultColor)
-            colorStack(x_value, tem_arr[1], 0, defaultColor)
-            colorStack(x_value, tem_arr[2], 0, defaultColor)
+            colorStack(x_value, tem_arr[0], z_value, defaultColor)
+            colorStack(x_value, tem_arr[1], z_value, defaultColor)
+            colorStack(x_value, tem_arr[2], z_value, defaultColor)
             return tem_arr[0]
         }
     }
@@ -108,8 +108,8 @@ function draw() {
             node = note.midiVal%12;
             octave = Math.floor(note.midiVal/12);
             xPos = getX(node);
-            yPos = getY(node, xPos);
             zPos = value_limit(octave,0,5);
+            yPos = getY(node, xPos, zPos);
             color = colors[modelData.genre][node].map(x => x * note.energy);
             colorStack(xPos, yPos, zPos, color);
             frame[xPos][yPos][zPos] = color.concat(note.energy);
@@ -129,7 +129,7 @@ function draw() {
         return (num / 50 + 5) / 2
     }
 
-    background(100);
+    background(0);
 
     datas = getFrame();
 

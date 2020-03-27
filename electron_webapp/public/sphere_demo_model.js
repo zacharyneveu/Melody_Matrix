@@ -4,7 +4,7 @@ class CubeModel {
             genre: "default",
             notes: []
         };
-        this.thresh = 0.5;
+        this.thresh = 0.3;
         this.maxenergy = 255;
         this.spectrum;
     }
