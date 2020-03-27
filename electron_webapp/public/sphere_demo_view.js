@@ -111,6 +111,7 @@ function draw() {
             yPos = getY(node, xPos);
             zPos = value_limit(octave,0,5);
             color = colors[modelData.genre][node].map(x => x * note.energy);
+            colorStack(xPos, yPos, zPos, color);
             frame[xPos][yPos][zPos] = color.concat(note.energy);
         });
 
