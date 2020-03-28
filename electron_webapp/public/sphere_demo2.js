@@ -1,6 +1,7 @@
 const datas = require('./data.json');
+const ml = require('./ml_process');
 
-let fr = 500;
+var fr = 500;
 
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
@@ -13,9 +14,12 @@ function setup() {
     easycam = createEasyCam();
     easycam = createEasyCam(this._renderer, {distance:1000});
     document.oncontextmenu = () => false;
+
+	ml.setup();
 }
 
 function draw() {
+    ml.accumulate();
 
     function colorPart(x_value, y_value, z_value) {
         let arr = datas[5 - y_value][5 - z_value][x_value]
