@@ -1,9 +1,5 @@
-//These two lists are for the x-value look-up
-const note_list1 = ["C", "C#", "D", "D#", "E", "F"]
-const note_list2 = ["B", "A#", "A", "G#", "G", "F#"]
 
-//This list is for the color_index look-up
-const note_full_list = ["C", "C#", "D", "D#", "E", "F", "B", "A#", "A", "G#", "G", "F#"]
+const noteList = ["C", "C#", "D", "D#", "E", "F", "B", "A#", "A", "G#", "G", "F#"]
 
 //Depending on the note value, the range of y varies
 const y_range1 = [0, 1, 2]
@@ -23,9 +19,9 @@ const color_codes = {
     'default': ["#AB0034", "#AA667B", "#BC448B", "#BB75FC", "#9000FF", "#808CFC", "#8ECAFF", "#C3F1FF", "#32CD34", "#FFFF01", "#FF8814", "#ff0000"],
 }
 
+
 const note_names = ["C_color", "Cb_color", "D_color", "Db_color", "E_color", "F_color", "Fb_color", "G_color", "Gb_color", "A_color", "Ab_color", "B_color"]
 
-var C_color, Cb_color, D_color, Db_color, E_color, F_color, Fb_color, G_color, Gb_color, A_color, Ab_color, B_color
 
 //The matrix_array(str) will be ued to store the hex code
 const length = 6;
@@ -42,20 +38,17 @@ matrix_array.forEach(function (row) {
 
 
 function getX(node_value) {
-    if (!note_full_list.includes(node_value)) {
+    if (!noteList.includes(node_value)) {
         console.log("Invalid node value!")
     }
-
-    if (note_list1.includes(node_value)) {
-        return note_list1.indexOf(node_value)
-    } else {
-        return note_list2.indexOf(node_value)
-    }
+    let nodeIndex = noteList.indexOf(node_value)
+    return nodeIndex < 6 ? nodeIndex : nodeIndex - 6
 }
 
 function getY(node_value, x_value) {
     let tem_arr = []
-    if (note_list1.includes(node_value)) {
+    let nodeIndex = noteList.indexOf(node_value)
+    if (nodeIndex < 6) {
         tem_arr = y_range1
 
     } else {
@@ -93,7 +86,7 @@ function pitchToOctave(pitch_num) {
 
 function pitchToNode(pitch_num) {
     tem = pitch_num % 12
-    return note_full_list[tem]
+    return noteList[tem]
 }
 
 
@@ -115,23 +108,6 @@ function hexToRGB(h) {
     //return arr
 }
 
-
-function genreToColor(g_name) {
-    let color_arr = color_codes[g_name]
-
-    color_arr.forEach((item, index) => {
-        color_arr[index] = hexToRGB(item)
-    })
-
-    note_names.forEach((item, index) => {
-        if (sessionStorage.getItem(item) === null) {
-            sessionStorage.setItem(item, color_arr[index])
-        }
-    })
-
-
-}
-
 function colorStack(x, y, z, colorString) {
     if (matrix_array[0][y][x] != defaultColor) {
         for (let i = 0; i < 6; i++)
@@ -147,12 +123,18 @@ function generateFrames(genreName) {
     return { Node: randNode, Genre: randGenre }
 }
 
-// this function will handle 
+var global_genre
+
 function displayFrame() {
-
+    
     frame = generateFrames('pop')
-    genreToColor('pop')
 
+    // this part is to test how the rendering handle the sudden changes of genre
+    let tempArr = ['pop', 'rock', 'edm', 'class', 'r&b', 'folk', 'hiphop', 'blues', 'default']
+    let tempGenre = tempArr[Math.floor(Math.random() * 9)]
+
+    // the globalGenre will be handed to spehre_demo for color look up
+    globalGenre = tempGenre
     //get the genre
     let genreName = frame.Genre
     let pitchValue = frame.Node.pitch
@@ -166,15 +148,10 @@ function displayFrame() {
     let zValue = octave - 1
 
 
-    let colorIndex = note_full_list.indexOf(nodeValue)
-    let colorString = color_codes[genreName.toLowerCase()][colorIndex]
-
     //update the matrix
     colorStack(xValue, yValue, zValue, 1)
 
-    //colorStack(xValue, yValue, zValue)
-    //export the matrix
-    sessionStorage.setItem("color_data", JSON.stringify(matrix_array));
+    //export the matrix to the other file
 
 }
 
