@@ -16,7 +16,7 @@ let fr = 500;
 let fft, sound;
 
 function preload(){
-    sound = loadSound('assets/Furr.flac');
+    sound = loadSound('assets/clair_de_lune.flac');
 }
 
 function setup() {

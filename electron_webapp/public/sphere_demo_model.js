@@ -1,3 +1,5 @@
+const genres = require("./assets/genres.json")
+
 class CubeModel {
     constructor(){
         this.modelData = {
@@ -9,6 +11,8 @@ class CubeModel {
         this.spectrum;
         this.nframes = 0;
         this.frames = [];
+        this.height  = 431; // model takes 431 pixel tall images
+        this.width = 513;  // model takes 512 pixel wide images
         this.session = new onnx.InferenceSession({backendHint: 'webgl'}); 
         const url = "https://github.com/zacharyneveu/genre_classification_onnx/blob/master/genre_classifier.onnx?raw=true"
         this.session.loadModel(url);
@@ -25,20 +29,20 @@ class CubeModel {
         this.modelData.notes.push(noteObject);
     }
 
-    updateGenre(){
-        this.modelData.genre = "default";
+    updateGenre(g="default"){
+        this.modelData.genre = g;
         // TODO: put the genre detection stuff here
     }
 
     accumulate(amp) {
-        if(this.nframes >= 511) {
-            this.frames.push(...amp);
+        if(this.nframes >= this.width-1) {
+            this.frames.push(...amp.slice(0,this.height));
             this.nframes = 0;
             this.infer();
             this.frames = [];
         }
         else {
-            this.frames.push(...amp);
+            this.frames.push(...amp.slice(0, this.height));
             this.nframes += 1;
         }
     }
@@ -46,11 +50,15 @@ class CubeModel {
     async infer() {
         console.log("frames: ");
         console.log(this.frames.length);
-        const inputTensor = new onnx.Tensor(this.frames, 'float32', [1024, 512]);
+        const inputTensor = new onnx.Tensor(this.frames, 'float32', [1, 1, this.width, this.height]);
         const outputMap = await this.session.run([inputTensor]);
+        console.log("Output map: ", outputMap);
         const outputData = outputMap.values().next().value.data;
-        console.log("ML Output: ");
-        console.log(outputData);
+        console.log("ML Raw: ", outputData)
+        // pred = argmax(outputData);
+        let pred = outputData.indexOf(Math.max(...outputData));
+        console.log("ML: Prediction: ", pred, genres["genres"][pred]);
+        this.updateGenre(genres["genres"][pred]);
     }
 }
 
