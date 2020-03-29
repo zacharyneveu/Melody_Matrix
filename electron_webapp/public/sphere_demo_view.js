@@ -16,7 +16,7 @@ let fr = 500;
 let fft, sound;
 
 function preload(){
-    sound = loadSound('assets/cat_tes.wav');
+    sound = loadSound('assets/Furr.flac');
 }
 
 function setup() {

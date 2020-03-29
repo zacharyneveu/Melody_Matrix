@@ -20,7 +20,25 @@ function setup() {
     sel.selected('mic');
     sel.changed(mySelectEvent);
     frameRate(fr);
-    Dw.EasyCam.prototype.apply = function(n) {
+    Dw.EasyCam.prototype.apply
+
+    start() {
+        this.updateModel();
+        // this.timer = setInterval(() => this.updateModel(), 1000);
+    }
+
+    updateNotes() {
+        this.cubeModel.clearNotes();
+        this.spectrum = fft.analyze();  // spectral analysis
+        this.cubeModel.accumulate(this.spectrum);
+        console.log(this.spectrum)
+
+        let amp;
+        for (var midiNote = 0; midiNote<127; midiNote++){
+            var note_obj = {
+                midiVal: 0,
+                energy: 0
+            } = function(n) {
         var o = this.cam;
         n = n || o.renderer,
         n && (this.camEYE = this.getPosition(this.camEYE), 
