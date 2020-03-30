@@ -3,13 +3,53 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/freshfork/p5.EasyCam@1.0.10/p5.easycam.min.js"></script>
     <script src="visual.js"></script>
     <script src="sphere_demo.js"></script>
 </head>
 
-<body>
+<body onload="getColor()">
+    <div class="container">
+        <div id="mySidebar" class="sidebar">
+            <label class="noteLabel">C</label>
+            <input type="color" id="color0" name="color" onchange="handleChange(this.value, this.id)" />
+            <label class="noteLabel">F#</label>
+            <input type="color" id="color6" name="color"
+                onchange="handleChange(this.value, this.id)" /><br />
+            <label class="noteLabel">C#</label>
+            <input type="color" id="color1" name="color" onchange="handleChange(this.value, this.id)" />
+            <label class="noteLabel">G</label>
+            <input type="color" id="color7" name="color" 
+                onchange="handleChange(this.value, this.id)" /><br />
+            <label class="noteLabel">D</label>
+            <input type="color" id="color2" name="color" onchange="handleChange(this.value, this.id)" />
+            <label class="noteLabel">G#</label>
+            <input type="color" id="color8" name="color" 
+                onchange="handleChange(this.value, this.id)" /><br />
+            <label class="noteLabel">D#</label>
+            <input type="color" id="color3" name="color" onchange="handleChange(this.value, this.id)" />
+            <label class="noteLabel">A</label>
+            <input type="color" id="color9" name="color" 
+                onchange="handleChange(this.value, this.id)" /><br />
+            <label class="noteLabel">E</label>
+            <input type="color" id="color4" name="color" onchange="handleChange(this.value, this.id)" />
+            <label class="noteLabel">A#</label>
+            <input type="color" id="color10" name="color" 
+                onchange="handleChange(this.value, this.id)" /><br />
+            <label class="noteLabel">F</label>
+            <input type="color" id="color5" name="color" onchange="handleChange(this.value, this.id)" />
+            <label class="noteLabel">B</label>
+            <input type="color" id="color11" name="color"
+                onchange="handleChange(this.value, this.id)" /><br />
+        </div>
+        <div id="btnContainer">
+            <button onCLick="toggleNav()" class="toggleButton" id="arrow-left">></button>
+            <button onCLick="toggleNav()" class="toggleButton" id="arrow-right"><</button>
+        </div>
+    </div>
+    </div>
 </body>
 
 </html>
