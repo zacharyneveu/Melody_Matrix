@@ -1,7 +1,9 @@
 var customColor = [[255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0]];
 
 let isHidden = true
-var useCustom = true
+// set useCustom to true to use the custom color palette
+// set useCustom to false to use the detected genre color palette
+var useCustom = false
 
 if (localStorage.getItem('custom') == null) {
     localStorage.setItem('custom', JSON.stringify(customColor))
