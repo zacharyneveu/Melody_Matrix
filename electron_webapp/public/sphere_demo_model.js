@@ -15,6 +15,7 @@ class CubeModel {
         this.width = 513;  // model takes 512 pixel wide images
         this.session = new onnx.InferenceSession({backendHint: 'webgl'}); 
         const url = "https://github.com/zacharyneveu/genre_classification_onnx/blob/master/genre_classifier.onnx?raw=true"
+
         this.session.loadModel(url);
         console.log("ML: Model loaded!");
     }
@@ -48,13 +49,9 @@ class CubeModel {
     }
 
     async infer() {
-        console.log("frames: ");
-        console.log(this.frames.length);
         const inputTensor = new onnx.Tensor(this.frames, 'float32', [1, 1, this.width, this.height]);
         const outputMap = await this.session.run([inputTensor]);
-        console.log("Output map: ", outputMap);
         const outputData = outputMap.values().next().value.data;
-        console.log("ML Raw: ", outputData)
         // pred = argmax(outputData);
         let pred = outputData.indexOf(Math.max(...outputData));
         console.log("ML: Prediction: ", pred, genres["genres"][pred]);
