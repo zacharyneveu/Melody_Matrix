@@ -1,7 +1,6 @@
 const datas = require('./data.json');
 
 let fr = 500;
-let sel;
 
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
