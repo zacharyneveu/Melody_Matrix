@@ -16,7 +16,8 @@ let fr = 500;
 let fft, sound;
 
 function preload(){
-    sound = loadSound('assets/clair_de_lune.flac');
+    // sound = loadSound('assets/clair_de_lune.flac');
+    sound = loadSound('assets/cits.mp3');
 }
 
 function setup() {
@@ -110,8 +111,9 @@ function draw() {
             node = note.midiVal%12;
             octave = Math.floor(note.midiVal/12);
             xPos = getX(node);
-            zPos = value_limit(octave,0,5);
+            zPos = octave%6;
             yPos = getY(node, xPos, zPos);
+            console.log(xPos, yPos, zPos);
             color = colors[modelData.genre][node].map(x => x * note.energy);
             colorStack(xPos, yPos, zPos, color);
             frame[xPos][yPos][zPos] = color.concat(note.energy);
@@ -146,7 +148,7 @@ function draw() {
         if(datas){
             let tem_arr = datas[index_x][index_y][index_z];
             fill(tem_arr[0], tem_arr[1], tem_arr[2]);
-            sphere(1+20*tem_arr[3]);
+            sphere(25*tem_arr[3]);
             pop();
         }
     })))
