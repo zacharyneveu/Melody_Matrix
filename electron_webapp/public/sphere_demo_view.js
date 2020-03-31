@@ -48,10 +48,6 @@ function setup() {
 
 function draw() {
 
-    function value_limit(val, min, max) {
-        return val < min ? min : (val > max ? max : val);
-      }
-
     function getX(node_value) {
         return node_value%6;
     }
