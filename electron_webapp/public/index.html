@@ -10,9 +10,26 @@
     <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
     <script language="javascript" type="text/javascript" src="sphere_demo_view.js"></script>
     <style> body {padding: 0; margin: 0; background: #000000; overflow-x:hidden; overflow-y: hidden} </style>
+        <style>
+        div.select {
+            display: inline-block;
+            margin: 0 0 1em 0;
+        }
+
+        p.small {
+            font-size: 0.7em;
+        }
+
+        label {
+            width: 12em;
+            display: inline-block;
+        }
+    </style>
   </head>
   <body>
-
+    <div class="select">
+        <label for="audioSource"> </label><select id="audioSource"></select>
+    </div>
   </body>
 
   <script>

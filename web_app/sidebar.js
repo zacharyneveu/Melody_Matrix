@@ -1,34 +1,22 @@
-var customColor = [[255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0], [255, 0, 0]];
+var customColor = [ [255, 255, 255],  [255, 255, 255],  [255, 255, 255],  [255, 255, 255],  [255, 255, 255],  [255, 255, 255],  [255, 255, 255],  [255, 255, 255],  [255, 255, 255],  [255, 255, 255],  [255, 255, 255],  [255, 255, 255]];
 
 let isHidden = true
-var useCustom = true
+// set useCustom to true to use the custom color palette
+// set useCustom to false to use the detected genre color palette
+var useCustom = false
 
 if (localStorage.getItem('custom') == null) {
     localStorage.setItem('custom', JSON.stringify(customColor))
 }
 customColor = JSON.parse(localStorage.getItem('custom'))
 
-
 window.onload = function () {
     customColor.forEach((item, index) => {
         let tem_id = "color" + index
-        console.log(rgbToHex(item))
-        document.getElementById(tem_id).setAttribute('defaultValue', '#' + rgbToHex(item));
+        document.getElementById(tem_id).setAttribute('value', rgbToHex(item));
     })
+    
 }
-
-function aaa(){
-    return '#ffff00'
-}
-
-function getColor(){
-    customColor.forEach((item, index) => {
-        let tem_id = "color" + index
-        console.log(rgbToHex(item))
-        document.getElementById(tem_id).setAttribute('defaultValue', '#' + rgbToHex(item));
-    })
-}
-
 
 window.addEventListener('mousemove', function (e) {
     if (e.x <= 250 && isHidden) {
@@ -38,13 +26,26 @@ window.addEventListener('mousemove', function (e) {
     }
 })
 
+
+function getColor(){
+    customColor.forEach((item, index) => {
+        let tem_id = "color" + index
+        document.getElementById(tem_id).setAttribute('value', rgbToHex(item));
+    })
+}
+
+function toggleCustom(){
+    useCustom = !useCustom
+    if(useCustom){
+        getColor()
+    }
+}
+
 function handleChange(item, id) {
-    console.log(id.length)
     let index = id.length < 7 ? parseInt(id.slice(-1)) : parseInt(id.slice(-2)) 
     let str = hexToRGB(item)
     let arr = str.split(',')
     arr = arr.map(Number)
-    console.log(arr)
     customColor[index] = arr
     localStorage.setItem('custom', JSON.stringify(customColor))
 }
