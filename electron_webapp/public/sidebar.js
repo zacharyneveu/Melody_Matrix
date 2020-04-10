@@ -43,9 +43,8 @@ function toggleCustom(){
 
 function handleChange(item, id) {
     let index = id.length < 7 ? parseInt(id.slice(-1)) : parseInt(id.slice(-2)) 
-    let str = hexToRGB(item)
-    let arr = str.split(',')
-    arr = arr.map(Number)
+    let colorstr = hexToRGB(item)
+    let arr = colorstr.split(',').map(Number)
     customColor[index] = arr
     localStorage.setItem('custom', JSON.stringify(customColor))
 }
@@ -65,16 +64,12 @@ function toggleNav() {
 }
 
 function hexToRGB(h) {
-    let hex = h.slice(0)
-    let arr = new Array(3)
+    let hex = parseInt(h.slice(1), 16)
     let r = (hex >> 16) & 255;
-    arr[0] = parseInt(r)
     let g = (hex >> 8) & 255;
-    arr[1] = parseInt(g)
     let b = hex & 255;
-    arr[2] = parseInt(b)
 
-    return arr
+    return r + "," + g + "," + b;
 }
 
 function rgbToHex(rgb) {
