@@ -3,11 +3,13 @@
   <head>
     <meta charset="UTF-8">
     <title>Virtual Cube</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
     <script language="javascript" type="text/javascript" src="libraries/p5.js"></script>
     <script language="javascript" type="text/javascript" src="libraries/p5.easycam.js"></script>
     <script language="javascript" src="libraries/p5.dom.js"></script>
     <script language="javascript" src="libraries/p5.sound.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script>
+    <script language="javascript" type="text/javascript" src="sidebar.js"></script>
     <script language="javascript" type="text/javascript" src="sphere_demo_view.js"></script>
     <style> body {padding: 0; margin: 0; background: #000000; overflow-x:hidden; overflow-y: hidden} </style>
         <style>
@@ -26,11 +28,51 @@
         }
     </style>
   </head>
-  <body>
+  <!-- <body>
     <div class="select">
         <label for="audioSource"> </label><select id="audioSource"></select>
     </div>
-  </body>
+  </body> -->
+  <body>
+    <div class="container">
+        <div id="mySidebar" class="sidebar">
+            <label class="noteLabel">C</label>
+            <input type="color" id="color0" name="color" onchange="handleChange(this.value, this.id)" />
+            <label class="noteLabel">F#</label>
+            <input type="color" id="color6" name="color" onchange="handleChange(this.value, this.id)" /><br />
+            <label class="noteLabel">C#</label>
+            <input type="color" id="color1" name="color" onchange="handleChange(this.value, this.id)" />
+            <label class="noteLabel">G</label>
+            <input type="color" id="color7" name="color" onchange="handleChange(this.value, this.id)" /><br />
+            <label class="noteLabel">D</label>
+            <input type="color" id="color2" name="color" onchange="handleChange(this.value, this.id)" />
+            <label class="noteLabel">G#</label>
+            <input type="color" id="color8" name="color" onchange="handleChange(this.value, this.id)" /><br />
+            <label class="noteLabel">D#</label>
+            <input type="color" id="color3" name="color" onchange="handleChange(this.value, this.id)" />
+            <label class="noteLabel">A</label>
+            <input type="color" id="color9" name="color" onchange="handleChange(this.value, this.id)" /><br />
+            <label class="noteLabel">E</label>
+            <input type="color" id="color4" name="color" onchange="handleChange(this.value, this.id)" />
+            <label class="noteLabel">A#</label>
+            <input type="color" id="color10" name="color" onchange="handleChange(this.value, this.id)" /><br />
+            <label class="noteLabel">F</label>
+            <input type="color" id="color5" name="color" onchange="handleChange(this.value, this.id)" />
+            <label class="noteLabel">B</label>
+            <input type="color" id="color11" name="color" onchange="handleChange(this.value, this.id)" /><br /><br />
+            <label class="switch" >
+                <input type="checkbox" onClick="toggleCustom()">
+                <span class="slider"></span>
+            </label>
+
+        </div>
+        <div id="btnContainer">
+            <button onCLick="toggleNav()" class="toggleButton" id="arrow-left">></button>
+            <button onCLick="toggleNav()" class="toggleButton" id="arrow-right"><</button>
+        </div>
+    </div>
+    </div>
+</body>
 
   <script>
   </script>

@@ -44,6 +44,7 @@ function setup() {
 
     controller = new cubeController.CubeController();
     controller.start();
+
 }
 
 function draw() {
@@ -98,6 +99,9 @@ function draw() {
     }
 
     function getFrame(x_value, y_value, z_value) {
+        let currentCustom = JSON.parse(localStorage.getItem('custom'));
+        console.log(currentCustom);
+        let isCustom = useCustom;
         initMatrixArray();
         let modelData = controller.dataRequest();
         let frame = blankCube;
@@ -109,8 +113,7 @@ function draw() {
             xPos = getX(node);
             zPos = octave%6;
             yPos = getY(node, xPos, zPos);
-            console.log(xPos, yPos, zPos);
-            color = colors[modelData.genre][node].map(x => x * note.energy);
+            color = isCustom ? currentCustom[node].map(x => x * note.energy) : colors[modelData.genre][node].map(x => x * note.energy);
             colorStack(xPos, yPos, zPos, color);
             frame[xPos][yPos][zPos] = color.concat(note.energy);
         });
