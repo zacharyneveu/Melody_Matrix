@@ -106,7 +106,7 @@ class Cube:
         
         # display from octave 1 up to size of cube in octaves
         # return None if y invalid (out of range)
-        offset = 12
+        offset = 0
         y = int((note.pitch-offset) // 12) if offset <= note.pitch < (self.size+1)*offset else None
         if y is None or x is None:
             return None

@@ -27,7 +27,7 @@ void loop() {
 void fillBuffer() {
   receivedBytes = 0;
   while (receivedBytes < buffer_size) {
-    if (Serial.available() > 0) {
+    if (Serial.available()) {
       pixel_buffer[receivedBytes] = Serial.read();
       // Serial.print(pixel_buffer[receivedBytes]);
       receivedBytes += 1;
