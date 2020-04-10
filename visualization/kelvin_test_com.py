@@ -12,11 +12,11 @@ def findArduino():
         # this excludes your current terminal "/dev/tty"
         ports = glob.glob('/dev/tty[A-Za-z]*')
     elif sys.platform.startswith('darwin'):
-        ports = glob.glob('/dev/tty.*')
+        ports = glob.glob('/dev/cu.*')
     else:
         raise EnvironmentError('Unsupported platform')
     # Now look for usbmodem ports
-    port = [x for x in ports if 'usbmodem' in x]
+    port = [x for x in ports if 'SLAB' in x]
     if port:
         ser = serial.Serial(port[0], 115200, timeout=10)
         print('Connecting to: ', ser.port, '\n...')
@@ -30,7 +30,7 @@ def sendArray(colorArray, ser):
     for value in colorArray.flatten():
         byte = chr(int(value/2)).encode('utf-8')
         ser.write(byte)
-    time.sleep(1/60)
+    time.sleep(1/10)
 
 def testAnimation(num_leds, ser):
     color_1 = [255,0,0]
@@ -47,7 +47,7 @@ def testAnimation(num_leds, ser):
 
 ser = findArduino()
 if ser:
-    testAnimation(60, ser)
+    testAnimation(216, ser)
     ser.close()
 else:
     print("Could not find Arduino...")
